@@ -1,0 +1,3 @@
+export const RESERVE_POOL_ADDRESS_MAINNET = "0xce596bf99d21e46fa91143c03d7a356682b67859"
+export const RESERVE_POOL_ADDRESS_KOVAN = "0xf6B782336ff699bA7Df1fe19E1e625e57F576C8a"
+export { default as RESERVE_POOL_ABI } from "./abi.json"
