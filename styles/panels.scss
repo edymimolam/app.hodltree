@@ -1,0 +1,53 @@
+.panel {
+  // background-color: #fff;
+  // padding: 2rem;
+  max-width: 30rem;
+
+  .ant-card-head-wrapper{
+    min-height: 72px;
+  }
+
+  .extended-title {
+    .extended-title-secondary-wrapper {
+      font-size: 14px;
+      .extended-title-secondary-text {
+        -webkit-text-fill-color: #8c8c8c;
+        color: #8c8c8c;
+        margin-right: 8px;
+      }
+    }
+  }
+
+  .text-wrapper {
+    display: flex;
+    align-items: center;
+    margin-bottom: .5rem;
+    span {
+      margin-right: .5rem;
+    }
+  }
+
+  .input-wrapper{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+
+    .input {
+      width: 100%
+    }
+    
+    button{
+      margin-left: 1rem;
+    }
+  }
+}
+.panel-faq{
+  max-width: 45rem;
+  h3{
+    font-weight: bold;
+  }
+  p {
+    text-align: left;
+    font-weight: normal;
+  }
+}
