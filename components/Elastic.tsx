@@ -1,3 +1,3 @@
-export default function Elastic () {
-    return <></>
+export default function Elastic() {
+  return <></>;
 }

@@ -1,3 +1,3 @@
-export default function Volatile () {
-    return <></>
+export default function Volatile() {
+  return <></>;
 }
