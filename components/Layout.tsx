@@ -1,40 +1,84 @@
 import React, { ReactNode } from "react";
 import Link from "next/link";
 import Head from "next/head";
+import { Layout, Menu } from "antd";
+import {
+  UploadOutlined,
+  UserOutlined,
+  VideoCameraOutlined,
+} from "@ant-design/icons";
+
+const { Header, Content, Footer, Sider } = Layout;
 
 type Props = {
   children?: ReactNode;
   title?: string;
 };
 
-const Layout = ({ children, title = "This is the default title" }: Props) => (
-  <div>
-    <Head>
-      <title>{title}</title>
-      <meta charSet="utf-8" />
-      <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-    </Head>
-    <header>
-      <nav>
-        <Link href="/">
-          <a>Home</a>
-        </Link>{" "}
-        |{" "}
-        <Link href="/em1">
-          <a>em1</a>
-        </Link>{" "}
-        |{" "}
-        <Link href="/susd">
-          <a>susd</a>
-        </Link>{" "}
-      </nav>
-    </header>
-    {children}
-    <footer>
-      <hr />
-      <span>Footer</span>
-    </footer>
-  </div>
-);
-
-export default Layout;
+export default function OuterLayout({
+  children,
+  title = "This is the default title",
+}: Props) {
+  return (
+    <div>
+      <Head>
+        <title>{title}</title>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      </Head>
+      <Layout>
+        <Sider
+          theme="light"
+          breakpoint="lg"
+          collapsedWidth="0"
+          onBreakpoint={(broken) => {
+            console.log(broken);
+          }}
+          onCollapse={(collapsed, type) => {
+            console.log(collapsed, type);
+          }}
+        >
+          <Menu theme="light" mode="inline" defaultSelectedKeys={["2"]}>
+            <div
+              style={{
+                height: 32,
+                margin: 16,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              Logo
+            </div>
+            <Menu.Item key="1" icon={<UserOutlined />}>
+              <Link href="/">
+                <a>Home</a>
+              </Link>
+            </Menu.Item>
+            <Menu.Item key="2" icon={<VideoCameraOutlined />}>
+              <Link href="/em1">
+                <a>em1</a>
+              </Link>
+            </Menu.Item>
+            <Menu.Item key="3" icon={<UploadOutlined />}>
+              <Link href="/susd">
+                <a>susd</a>
+              </Link>
+            </Menu.Item>
+          </Menu>
+        </Sider>
+        <Layout>
+          <Header style={{ backgroundColor: "#fff" }}>
+            Header for {title}
+          </Header>
+          <Content
+            style={{ maxWidth: 1200, minHeight: "100vh", margin: "2rem auto" }}
+          >
+            {children}
+          </Content>
+          <Footer>Footer</Footer>
+        </Layout>
+      </Layout>
+    </div>
+  );
+}
