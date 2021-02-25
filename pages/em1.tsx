@@ -1,5 +1,6 @@
 import { config } from "../config/em1";
 import { useWeb3Connect } from "../hooks/useWeb3Connect";
+import { useInitInstances } from "../hooks/useInitInstances";
 import Layout from "../components/Layout";
 import Faq from "../components/Faq";
 import Elastic from "../components/Elastic";
@@ -7,9 +8,8 @@ import Volatile from "../components/Volatile";
 import { Row, Col } from "antd";
 
 export default function Em1() {
-  const { instances, initInstances } = {};
-
   useWeb3Connect();
+  const [instances, initInstances] = useInitInstances(config);
 
   return (
     <Layout title="em1">
