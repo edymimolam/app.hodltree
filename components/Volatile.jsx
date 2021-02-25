@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-// import { useWeb3 } from "hooks/useWeb3";
-// import { utils } from "web3";
+import { useWeb3React } from "@web3-react/core";
+import { utils } from "web3";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import { getUnitByDecimal, minTwoDigits, getMinDecimalValue } from "../utils";
@@ -23,8 +23,7 @@ import {
 } from "antd";
 import { ExportOutlined } from "@ant-design/icons";
 
-// utils
-const { fromWei, toWei } = {};
+const { fromWei, toWei } = utils;
 dayjs.extend(duration);
 const { Text } = Typography;
 
@@ -55,8 +54,7 @@ export default function Volatile({ instances, initInstances, config }) {
     message: "",
   });
 
-  //useWeb3()
-  const { myWallet } = {};
+  const { account } = useWeb3React();
 
   const closeModal = () =>
     setModal((data) => ({ ...data, visible: false, message: "" }));
@@ -76,21 +74,21 @@ export default function Volatile({ instances, initInstances, config }) {
         getUnitByDecimal(inputTokenDecimal)
       );
       const allowance = await instances.inputToken.methods
-        .allowance(myWallet, volatilePoolAddress)
+        .allowance(account, volatilePoolAddress)
         .call();
 
       if (+stakeAmountWei > +allowance) {
         setModal((data) => ({ ...data, visible: true, message: APPROVE_TEXT }));
         const gasForApprove = await instances.inputToken.methods
           .approve(volatilePoolAddress, stakeAmountWei)
-          .estimateGas({ from: myWallet });
+          .estimateGas({ from: account });
         await instances.inputToken.methods
           .approve(volatilePoolAddress, stakeAmountWei)
-          .send({ from: myWallet, gas: gasForApprove });
+          .send({ from: account, gas: gasForApprove });
       }
 
       const finalAllowance = await instances.inputToken.methods
-        .allowance(myWallet, volatilePoolAddress)
+        .allowance(account, volatilePoolAddress)
         .call();
       if (+stakeAmountWei <= +finalAllowance) {
         setModal((data) => ({
@@ -100,10 +98,10 @@ export default function Volatile({ instances, initInstances, config }) {
         }));
         const gasForStake = await instances.volatilePool.methods
           .receiveInToken(stakeAmountWei)
-          .estimateGas({ from: myWallet });
+          .estimateGas({ from: account });
         await instances.volatilePool.methods
           .receiveInToken(stakeAmountWei)
-          .send({ from: myWallet, gas: gasForStake });
+          .send({ from: account, gas: gasForStake });
         setModal((data) => ({
           ...data,
           visible: true,
@@ -138,21 +136,21 @@ export default function Volatile({ instances, initInstances, config }) {
         getUnitByDecimal(vptDecimal)
       );
       const allowance = await instances.vpt.methods
-        .allowance(myWallet, vpStorageAddress)
+        .allowance(account, vpStorageAddress)
         .call();
 
       if (+requestAmountWei > +allowance) {
         setModal((data) => ({ ...data, visible: true, message: APPROVE_TEXT }));
         const gasForApprove = await instances.vpt.methods
           .approve(vpStorageAddress, requestAmountWei)
-          .estimateGas({ from: myWallet });
+          .estimateGas({ from: account });
         await instances.vpt.methods
           .approve(vpStorageAddress, requestAmountWei)
-          .send({ from: myWallet, gas: gasForApprove });
+          .send({ from: account, gas: gasForApprove });
       }
 
       const finalAllowance = await instances.vpt.methods
-        .allowance(myWallet, vpStorageAddress)
+        .allowance(account, vpStorageAddress)
         .call();
       if (+requestAmountWei <= +finalAllowance) {
         setModal((data) => ({
@@ -162,10 +160,10 @@ export default function Volatile({ instances, initInstances, config }) {
         }));
         const gasForRequest = await instances.vpStorage.methods
           .requestExchange(requestAmountWei)
-          .estimateGas({ from: myWallet });
+          .estimateGas({ from: account });
         await instances.vpStorage.methods
           .requestExchange(requestAmountWei)
-          .send({ from: myWallet, gas: gasForRequest });
+          .send({ from: account, gas: gasForRequest });
         setModal((data) => ({
           ...data,
           visible: true,
@@ -194,10 +192,10 @@ export default function Volatile({ instances, initInstances, config }) {
       }));
       const gasForExchange = await instances.vpStorage.methods
         .executeExchange()
-        .estimateGas({ from: myWallet });
+        .estimateGas({ from: account });
       await instances.vpStorage.methods
         .executeExchange()
-        .send({ from: myWallet, gas: gasForExchange });
+        .send({ from: account, gas: gasForExchange });
       setModal((data) => ({
         ...data,
         visible: true,
@@ -224,19 +222,19 @@ export default function Volatile({ instances, initInstances, config }) {
       setHoldFinishDate(dayjs.unix(startTime).add(time, "s"));
 
       const myInputTokenBalance = await instances.inputToken.methods
-        .balanceOf(myWallet)
+        .balanceOf(account)
         .call();
       const myVPTBalance = await instances.vpt.methods
-        .balanceOf(myWallet)
+        .balanceOf(account)
         .call();
       const myRequestedBalance = await instances.vpStorage.methods
-        .balanceOf(myWallet)
+        .balanceOf(account)
         .call();
       const vpStorageBalance = await instances.vpStorage.methods
         .getOutTokenForExchange()
         .call();
       const calculateIn = await instances.vpStorage.methods
-        .calculateIn(myWallet)
+        .calculateIn(account)
         .call();
       const inputTokenDecimal = await instances.inputToken.getDecimals();
       const vptDecimal = await instances.vpt.getDecimals();
@@ -255,7 +253,7 @@ export default function Volatile({ instances, initInstances, config }) {
       setInputTokenDecimal(inputTokenDecimal);
       setVptDecimal(vptDecimal);
     })();
-  }, [instances, myWallet]);
+  }, [instances, account]);
 
   useEffect(() => {
     if (!holdFinishDate) return;

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-// import { useWeb3 } from "hooks/useWeb3";
-// import { utils } from "web3";
+import { useWeb3React } from "@web3-react/core";
+import { utils } from "web3";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import { getUnitByDecimal, getMinDecimalValue } from "../utils";
@@ -23,8 +23,7 @@ import {
 } from "antd";
 import { ExportOutlined } from "@ant-design/icons";
 
-//utils
-const { fromWei, toWei } = {};
+const { fromWei, toWei } = utils;
 
 const { Text } = Typography;
 dayjs.extend(duration);
@@ -62,7 +61,7 @@ export default function Elastic({ instances, initInstances, config }) {
   });
 
   //useWeb3()
-  const { myWallet } = {};
+  const { account } = useWeb3React();
 
   const closeModal = () =>
     setModal((data) => ({ ...data, visible: false, message: "" }));
@@ -91,21 +90,21 @@ export default function Elastic({ instances, initInstances, config }) {
         getUnitByDecimal(inputTokenDecimal)
       );
       const allowance = await instances.inputToken.methods
-        .allowance(myWallet, emPoolAddress)
+        .allowance(account, emPoolAddress)
         .call();
 
       if (+stakeAmountWei > +allowance) {
         setModal((data) => ({ ...data, visible: true, message: APPROVE_TEXT }));
         const gasForApprove = await instances.inputToken.methods
           .approve(emPoolAddress, stakeAmountWei)
-          .estimateGas({ from: myWallet });
+          .estimateGas({ from: account });
         await instances.inputToken.methods
           .approve(emPoolAddress, stakeAmountWei)
-          .send({ from: myWallet, gas: gasForApprove });
+          .send({ from: account, gas: gasForApprove });
       }
 
       const finalAllowance = await instances.inputToken.methods
-        .allowance(myWallet, emPoolAddress)
+        .allowance(account, emPoolAddress)
         .call();
       if (+stakeAmountWei <= +finalAllowance) {
         setModal((data) => ({
@@ -115,10 +114,10 @@ export default function Elastic({ instances, initInstances, config }) {
         }));
         const gasForStake = await instances.emPool.methods
           .receiveInToken(stakeAmountWei)
-          .estimateGas({ from: myWallet });
+          .estimateGas({ from: account });
         await instances.emPool.methods
           .receiveInToken(stakeAmountWei)
-          .send({ from: myWallet, gas: gasForStake });
+          .send({ from: account, gas: gasForStake });
         setModal((data) => ({
           ...data,
           visible: true,
@@ -160,10 +159,10 @@ export default function Elastic({ instances, initInstances, config }) {
       }));
       const gasForWithdraw = await instances.emPool.methods
         .withdraw(withdrawAmountWei)
-        .estimateGas({ from: myWallet });
+        .estimateGas({ from: account });
       await instances.emPool.methods
         .withdraw(withdrawAmountWei)
-        .send({ from: myWallet, gas: gasForWithdraw });
+        .send({ from: account, gas: gasForWithdraw });
       setModal((data) => ({
         ...data,
         visible: true,
@@ -196,21 +195,21 @@ export default function Elastic({ instances, initInstances, config }) {
         getUnitByDecimal(eptDecimal)
       );
       const allowance = await instances.ept.methods
-        .allowance(myWallet, reservePoolAddress)
+        .allowance(account, reservePoolAddress)
         .call();
 
       if (+exchangeAmountWei > +allowance) {
         setModal((data) => ({ ...data, visible: true, message: APPROVE_TEXT }));
         const gasForApprove = await instances.ept.methods
           .approve(reservePoolAddress, exchangeAmountWei)
-          .estimateGas({ from: myWallet });
+          .estimateGas({ from: account });
         await instances.ept.methods
           .approve(reservePoolAddress, exchangeAmountWei)
-          .send({ from: myWallet, gas: gasForApprove });
+          .send({ from: account, gas: gasForApprove });
       }
 
       const finalAllowance = await instances.ept.methods
-        .allowance(myWallet, reservePoolAddress)
+        .allowance(account, reservePoolAddress)
         .call();
       if (+exchangeAmountWei <= +finalAllowance) {
         setModal((data) => ({
@@ -220,10 +219,10 @@ export default function Elastic({ instances, initInstances, config }) {
         }));
         const gasForExchange = await instances.reservePool.methods
           .receiveInToken(exchangeAmountWei)
-          .estimateGas({ from: myWallet });
+          .estimateGas({ from: account });
         await instances.reservePool.methods
           .receiveInToken(exchangeAmountWei)
-          .send({ from: myWallet, gas: gasForExchange });
+          .send({ from: account, gas: gasForExchange });
         setModal((data) => ({
           ...data,
           visible: true,
@@ -248,7 +247,7 @@ export default function Elastic({ instances, initInstances, config }) {
 
     (async () => {
       const myElasticBPTBalance = await instances.emPool.methods
-        .getBalanceBpOf(myWallet)
+        .getBalanceBpOf(account)
         .call();
       const elasticBPTBalance = await instances.emPool.methods
         .getBalanceBp()
@@ -256,16 +255,16 @@ export default function Elastic({ instances, initInstances, config }) {
       const elasticInBalance = await instances.emPool.methods
         .getBalanceIn()
         .call();
-      const isOnHold = await instances.emPool.methods.isOnHold(myWallet).call();
+      const isOnHold = await instances.emPool.methods.isOnHold(account).call();
       const holdTime = await instances.emPool.methods.holdTime().call();
       const reservePoolBalance = await instances.reservePool.methods
         .getOutTokenBalance()
         .call();
       const myInputTokenBalance = await instances.inputToken.methods
-        .balanceOf(myWallet)
+        .balanceOf(account)
         .call();
       const myEPTBalance = await instances.ept.methods
-        .balanceOf(myWallet)
+        .balanceOf(account)
         .call();
       const eptDecimal = await instances.ept.getDecimals();
       const inputTokenDecimal = await instances.inputToken.getDecimals();
@@ -292,7 +291,7 @@ export default function Elastic({ instances, initInstances, config }) {
       setEptDecimal(eptDecimal);
       setInputTokenDecimal(inputTokenDecimal);
     })();
-  }, [instances, myWallet]);
+  }, [instances, account]);
 
   const title = (
     <div className="extended-title">
