@@ -1,4 +1,5 @@
 import { config } from "../config/em1";
+import { useWeb3Connect } from "../hooks/useWeb3Connect";
 import Layout from "../components/Layout";
 import Faq from "../components/Faq";
 import Elastic from "../components/Elastic";
@@ -7,6 +8,9 @@ import { Row, Col } from "antd";
 
 export default function Em1() {
   const { instances, initInstances } = {};
+
+  useWeb3Connect();
+
   return (
     <Layout title="em1">
       <Row gutter={[16, 16]} justify="center" align="stretch">
