@@ -312,8 +312,9 @@ export default function Elastic({ instances, initInstances, config }) {
   );
 
   return (
-    <Col span={12} xs={24} md={12} className="panel">
-      <Card title={title} size="small">
+    // <Col span={12} xs={24} md={12} className="panel">
+    <>
+      <Card title={title} size="small" className="panel">
         <div>
           <div className="text-wrapper">
             <Text type="secondary">
@@ -455,6 +456,7 @@ export default function Elastic({ instances, initInstances, config }) {
       >
         {modal.message}
       </Modal>
-    </Col>
+    </>
+    // </Col>
   );
 }

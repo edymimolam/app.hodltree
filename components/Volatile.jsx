@@ -280,8 +280,9 @@ export default function Volatile({ instances, initInstances, config }) {
   }, [holdFinishDate, myRequestedBalance]);
 
   return (
-    <Col span={12} xs={24} md={12} className="panel">
-      <Card title="Volatile pool" size="small">
+    // <Col span={12} xs={24} md={12} className="panel">
+    <>
+      <Card title="Volatile pool" size="small" className="panel">
         <div>
           <div className="text-wrapper">
             <Text type="secondary">
@@ -391,6 +392,7 @@ export default function Volatile({ instances, initInstances, config }) {
       >
         {modal.message}
       </Modal>
-    </Col>
+    </>
+    // </Col>
   );
 }

@@ -72,7 +72,7 @@ export default function OuterLayout({
             Header for {title}
           </Header>
           <Content
-            style={{ maxWidth: 1200, minHeight: "100vh", margin: "2rem auto" }}
+            style={{ maxWidth: 960, minHeight: "100vh", margin: "1rem auto" }}
           >
             {children}
           </Content>
