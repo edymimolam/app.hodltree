@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import Link from "next/link";
 import Head from "next/head";
-import { Layout, Menu } from "antd";
+import { Layout, Menu, Button } from "antd";
 import {
   UploadOutlined,
   UserOutlined,
@@ -68,8 +68,17 @@ export default function OuterLayout({
           </Menu>
         </Sider>
         <Layout>
-          <Header style={{ backgroundColor: "#fff" }}>
-            Header for {title}
+          <Header
+            style={{
+              backgroundColor: "#fff",
+            }}
+          >
+            <div className="header-inner">
+              <span>Header for {title}</span>
+              <Button type="primary" shape="round">
+                Connet Wallet
+              </Button>
+            </div>
           </Header>
           <Content
             style={{ maxWidth: 960, minHeight: "100vh", margin: "1rem auto" }}
