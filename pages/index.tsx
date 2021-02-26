@@ -1,9 +1,9 @@
-import Layout from "../components/Layout";
+import AppLayout from "../components/AppLayout";
 
 const IndexPage = () => (
-  <Layout title="Home ">
+  <AppLayout title="Home ">
     <h1>Home</h1>
-  </Layout>
+  </AppLayout>
 );
 
 export default IndexPage;

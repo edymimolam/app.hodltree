@@ -8,7 +8,6 @@ import {
   UserOutlined,
   VideoCameraOutlined,
 } from "@ant-design/icons";
-
 const { Content, Footer, Sider } = Layout;
 
 type Props = {
@@ -16,7 +15,7 @@ type Props = {
   title?: string;
 };
 
-export default function OuterLayout({
+export default function AppLayout({
   children,
   title = "This is the default title",
 }: Props) {

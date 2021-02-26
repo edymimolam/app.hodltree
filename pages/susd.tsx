@@ -1,7 +1,7 @@
 import { config } from "../config/susd";
 import { useWeb3Connect } from "../hooks/useWeb3Connect";
 import { useInitInstances } from "../hooks/useInitInstances";
-import Layout from "../components/Layout";
+import AppLayout from "../components/AppLayout";
 import Faq from "../components/Faq";
 import Elastic from "../components/Elastic";
 import Volatile from "../components/Volatile";
@@ -13,7 +13,7 @@ export default function Em1() {
   const [instances, initInstances] = useInitInstances(config);
 
   return (
-    <Layout title="susd">
+    <AppLayout title="susd">
       <Row gutter={[16, 16]} justify="center" align="stretch">
         <Col xs={24} md={12}>
           <Volatile
@@ -33,6 +33,6 @@ export default function Em1() {
           <Faq config={config} />
         </Col>
       </Row>
-    </Layout>
+    </AppLayout>
   );
 }
