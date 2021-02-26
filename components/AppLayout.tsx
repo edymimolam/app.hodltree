@@ -2,12 +2,13 @@ import React, { ReactNode } from "react";
 import Link from "next/link";
 import Head from "next/head";
 import Header from "./Header";
-import { Layout, Menu } from "antd";
+import { Layout, Menu, Spin, Alert } from "antd";
 import {
   UploadOutlined,
   UserOutlined,
   VideoCameraOutlined,
 } from "@ant-design/icons";
+import { useIsLoading } from "../hooks/useIsLoading";
 const { Content, Footer, Sider } = Layout;
 
 type Props = {
@@ -19,6 +20,7 @@ export default function AppLayout({
   children,
   title = "This is the default title",
 }: Props) {
+  const isLoading = useIsLoading();
   return (
     <div>
       <Head>
@@ -76,7 +78,15 @@ export default function AppLayout({
               margin: "1rem auto",
             }}
           >
-            {children}
+            {isLoading ? (
+              <Alert
+                type="info"
+                className="spin-container"
+                message={<Spin />}
+              ></Alert>
+            ) : (
+              children
+            )}
           </Content>
           <Footer>Footer</Footer>
         </Layout>

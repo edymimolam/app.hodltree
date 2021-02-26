@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  font-family: 'Rubik', sans-serif;
+  font-family: "Rubik", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-size: 16px;
@@ -8,19 +8,25 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
 a {
-  color: #8c8c8c
+  color: #8c8c8c;
 }
 .App {
   text-align: center;
 }
 
-.containerCenter{
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.spin-container {
+  padding: 5rem 0;
+  .ant-alert-content {
+    width: 960px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .ant-spin {
+      height: 20px;
+    }
+  }
 }
