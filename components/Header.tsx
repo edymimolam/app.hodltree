@@ -13,6 +13,7 @@ export default function Header({ title }: { title: string }) {
     <AntHeader
       style={{
         backgroundColor: "#fff",
+        padding: "0 16px",
       }}
     >
       <div className="header-inner">
