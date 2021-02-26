@@ -38,7 +38,7 @@ export default function Sidebar() {
             alignItems: "center",
           }}
         >
-          Logo
+          <img style={{ height: 32 }} src="/images/black_full_logo.png" />
         </div>
         <Menu.Item key="1" icon={<UserOutlined />}>
           <Link href="/">
