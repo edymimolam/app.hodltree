@@ -14,14 +14,14 @@ export default function Em1() {
   return (
     <Layout title="em1">
       <Row gutter={[16, 16]} justify="center" align="stretch">
-        <Col span={12}>
+        <Col xs={24} md={12}>
           <Volatile
             instances={instances}
             initInstances={initInstances}
             config={config}
           />
         </Col>
-        <Col span={12}>
+        <Col xs={24} md={12}>
           <Elastic
             instances={instances}
             initInstances={initInstances}
