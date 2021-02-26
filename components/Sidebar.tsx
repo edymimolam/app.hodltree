@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { Layout, Menu } from "antd";
 import {
   UploadOutlined,
@@ -6,10 +7,28 @@ import {
   VideoCameraOutlined,
 } from "@ant-design/icons";
 
+function getSelectedMenuItem(route: string): string[] {
+  switch (route) {
+    case "/":
+      return ["1"];
+    case "/em1":
+      return ["2"];
+    case "/susd":
+      return ["3"];
+    default:
+      return [""];
+  }
+}
+
 export default function Sidebar() {
+  const router = useRouter();
   return (
     <Layout.Sider theme="light" breakpoint="lg" collapsedWidth="0">
-      <Menu theme="light" mode="inline" defaultSelectedKeys={["2"]}>
+      <Menu
+        theme="light"
+        mode="inline"
+        defaultSelectedKeys={getSelectedMenuItem(router.route)}
+      >
         <div
           style={{
             height: 32,
