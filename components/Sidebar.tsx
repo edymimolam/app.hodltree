@@ -41,19 +41,13 @@ export default function Sidebar() {
           <img style={{ height: 32 }} src="/images/black_full_logo.png" />
         </div>
         <Menu.Item key="1" icon={<UserOutlined />}>
-          <Link href="/">
-            <a>Home</a>
-          </Link>
+          <Link href="/">Home</Link>
         </Menu.Item>
         <Menu.Item key="2" icon={<VideoCameraOutlined />}>
-          <Link href="/em1">
-            <a>em1</a>
-          </Link>
+          <Link href="/em1">em1</Link>
         </Menu.Item>
         <Menu.Item key="3" icon={<UploadOutlined />}>
-          <Link href="/susd">
-            <a>susd</a>
-          </Link>
+          <Link href="/susd">susd</Link>
         </Menu.Item>
       </Menu>
     </Layout.Sider>
