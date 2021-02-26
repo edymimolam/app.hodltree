@@ -1,15 +1,11 @@
 import React, { ReactNode } from "react";
-import Link from "next/link";
+
 import Head from "next/head";
 import Header from "./Header";
-import { Layout, Menu, Spin, Alert } from "antd";
-import {
-  UploadOutlined,
-  UserOutlined,
-  VideoCameraOutlined,
-} from "@ant-design/icons";
+import Sidebar from "./Sidebar";
+import { Layout, Spin, Alert } from "antd";
 import { useIsLoading } from "../hooks/useIsLoading";
-const { Content, Footer, Sider } = Layout;
+const { Content, Footer } = Layout;
 
 type Props = {
   children?: ReactNode;
@@ -29,46 +25,7 @@ export default function AppLayout({
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
       <Layout hasSider={true}>
-        <Sider
-          theme="light"
-          breakpoint="lg"
-          collapsedWidth="0"
-          onBreakpoint={(broken) => {
-            console.log(broken);
-          }}
-          onCollapse={(collapsed, type) => {
-            console.log(collapsed, type);
-          }}
-        >
-          <Menu theme="light" mode="inline" defaultSelectedKeys={["2"]}>
-            <div
-              style={{
-                height: 32,
-                margin: 16,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              Logo
-            </div>
-            <Menu.Item key="1" icon={<UserOutlined />}>
-              <Link href="/">
-                <a>Home</a>
-              </Link>
-            </Menu.Item>
-            <Menu.Item key="2" icon={<VideoCameraOutlined />}>
-              <Link href="/em1">
-                <a>em1</a>
-              </Link>
-            </Menu.Item>
-            <Menu.Item key="3" icon={<UploadOutlined />}>
-              <Link href="/susd">
-                <a>susd</a>
-              </Link>
-            </Menu.Item>
-          </Menu>
-        </Sider>
+        <Sidebar />
         <Layout>
           <Header title={title}></Header>
           <Content
