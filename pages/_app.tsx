@@ -1,5 +1,4 @@
-import "antd/dist/antd.css";
-import "../styles/style.scss";
+import "../styles/style.less";
 import Web3 from "web3";
 import { Web3ReactProvider } from "@web3-react/core";
 
