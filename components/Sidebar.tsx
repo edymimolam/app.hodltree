@@ -25,12 +25,12 @@ export default function Sidebar() {
   return (
     <Layout.Sider theme="light" breakpoint="lg" collapsedWidth="0">
       <Menu
-        theme="light"
+        theme="dark"
         mode="inline"
         defaultSelectedKeys={getSelectedMenuItem(router.route)}
       >
         <div className="logo-container">
-          <img className="logo-img" src="/images/black_full_logo.png" />
+          <img className="logo-img" src="/images/white_full_logo.png" />
         </div>
         <Menu.Item key="1" icon={<UserOutlined />}>
           <Link href="/">Home</Link>
