@@ -29,16 +29,8 @@ export default function Sidebar() {
         mode="inline"
         defaultSelectedKeys={getSelectedMenuItem(router.route)}
       >
-        <div
-          style={{
-            height: 32,
-            margin: 16,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <img style={{ height: 32 }} src="/images/black_full_logo.png" />
+        <div className="logo-container">
+          <img className="logo-img" src="/images/black_full_logo.png" />
         </div>
         <Menu.Item key="1" icon={<UserOutlined />}>
           <Link href="/">Home</Link>

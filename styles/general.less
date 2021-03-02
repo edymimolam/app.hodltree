@@ -1,7 +1,7 @@
 .spin-container {
   padding: 5rem 0;
   .ant-alert-content {
-    width: 960px;
+    width: @main-content-width;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -9,4 +9,10 @@
       height: 20px;
     }
   }
+}
+
+.main-content-container {
+  max-width: @main-content-width;
+  min-height: 100vh;
+  margin: 1rem auto;
 }

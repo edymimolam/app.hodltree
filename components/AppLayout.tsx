@@ -28,13 +28,7 @@ export default function AppLayout({
         <Sidebar />
         <Layout>
           <Header title={title}></Header>
-          <Content
-            style={{
-              maxWidth: 960,
-              minHeight: "100vh",
-              margin: "1rem auto",
-            }}
-          >
+          <Content className="main-content-container">
             {isLoading ? (
               <Alert
                 type="info"

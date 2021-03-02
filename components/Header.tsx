@@ -10,12 +10,7 @@ export default function Header({ title }: { title: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const { active, activate, account } = useWeb3React();
   return (
-    <AntHeader
-      style={{
-        backgroundColor: "#fff",
-        padding: "0 16px",
-      }}
-    >
+    <AntHeader className="header">
       <div className="header-inner">
         <span>Header for {title}</span>
         {active ? (
