@@ -33,7 +33,7 @@ export default function Sidebar() {
           <img className="logo-img" src="/images/white_full_logo.png" />
         </div>
         <Menu.Item key="1" icon={<UserOutlined />}>
-          <Link href="/">Home</Link>
+          <Link href="/">Flash Loans</Link>
         </Menu.Item>
         <Menu.Item key="2" icon={<VideoCameraOutlined />}>
           <Link href="/em1">em1</Link>
