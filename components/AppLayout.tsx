@@ -28,17 +28,20 @@ export default function AppLayout({
         <Sidebar />
         <Layout>
           <Header title={title}></Header>
-          <Content className="main-content-container">
-            {isLoading ? (
-              <Alert
-                type="info"
-                className="spin-container"
-                message={<Spin />}
-              ></Alert>
-            ) : (
-              children
-            )}
+          <Content>
+            <div className="main-content-container">
+              {isLoading ? (
+                <Alert
+                  type="info"
+                  className="spin-container"
+                  message={<Spin />}
+                ></Alert>
+              ) : (
+                children
+              )}
+            </div>
           </Content>
+
           <Footer>Footer</Footer>
         </Layout>
       </Layout>
