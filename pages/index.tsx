@@ -12,13 +12,13 @@ export default function FlashLoans() {
       <Row gutter={[16, 16]} align="stretch">
         <Col xs={24} md={12}>
           <Card className="fl-earnings">
-            <div className="fl-earnings__left">
+            <div className="fl-earnings__left flex-column-jsb">
               <h3 className="fl-earnings__small-text">Total Earnings</h3>
               <span className="fl-earnings__big-text">
                 $ {data.totalEarnings}
               </span>
             </div>
-            <div className="fl-earnings__right">
+            <div className="fl-earnings__right flex-column-jsb">
               <h3 className="fl-earnings__small-text">APY</h3>
               <span className="fl-earnings__big-text">{data.apy}%</span>
             </div>
@@ -27,7 +27,7 @@ export default function FlashLoans() {
         <Col xs={24} md={12}>
           <Card className="fl-balance">
             {/* <h1>Right</h1> */}
-            <div className="fl-balance__left">
+            <div className="fl-balance__left flex-column-jsb">
               <h3 className="fl-balance__small-text">My Balance</h3>
               <span className="fl-balance__big-text">$ 12323423</span>
             </div>
