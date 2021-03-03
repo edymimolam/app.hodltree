@@ -1,3 +1,7 @@
+.fl-row {
+  margin-bottom: 64px;
+}
+
 .fl-balance,
 .fl-balance {
   height: 100%;
@@ -8,39 +12,87 @@
 .fl-earnings {
   .ant-card-body {
     display: flex;
-    .fl-earnings__left {
-      width: 70%;
-    }
-    .fl-earnings__small-text {
-      font-weight: 400;
-      font-size: @font-size-base;
-      color: @text-color-secondary;
-    }
-    .fl-earnings__big-text {
-      font-weight: bold;
-      font-size: @heading-3-size;
-    }
+  }
+  &__left {
+    width: 70%;
+  }
+  &__small-text {
+    font-weight: 400;
+    font-size: @font-size-base;
+    color: @text-color-secondary;
+  }
+  &__big-text {
+    font-weight: bold;
+    font-size: @heading-3-size;
   }
 }
 .fl-balance {
   .ant-card-body {
     display: flex;
-    .fl-balance__left {
-      width: 50%;
+  }
+  &__left {
+    width: 50%;
+  }
+  &__right {
+    width: 50%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+  &__small-text {
+    font-weight: 400;
+    font-size: @font-size-base;
+    color: @text-color-secondary;
+  }
+  &__big-text {
+    font-size: @heading-4-size;
+  }
+}
+.fl-tokens {
+  position: relative;
+  &-header {
+    position: absolute;
+    top: -28px;
+    width: 100%;
+    display: flex;
+    padding: 0 @padding-xs;
+    padding-left: 56px;
+    color: @text-color-secondary;
+    font-size: @font-size-sm;
+    &__item {
+      width: 33.33%;
     }
-    .fl-balance__right {
-      width: 50%;
+  }
+  &-container {
+    margin-bottom: @margin-xs;
+    .ant-card-body {
+      padding: @padding-xs;
+      padding-left: 56px;
+    }
+  }
+  .fl-token {
+    display: flex;
+    align-items: stretch;
+    position: relative;
+    &-icon {
+      width: 40px;
+      height: 40px;
+      position: absolute;
+      left: -48px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    &__item {
+      width: 33.33%;
       display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
+      align-items: center;
     }
-    .fl-balance__small-text {
-      font-weight: 400;
-      font-size: @font-size-base;
-      color: @text-color-secondary;
-    }
-    .fl-balance__big-text {
-      font-size: @heading-4-size;
+    &-asset {
+      align-items: start;
+      &__name {
+        color: @text-color-secondary;
+        font-size: @font-size-sm;
+      }
     }
   }
 }
