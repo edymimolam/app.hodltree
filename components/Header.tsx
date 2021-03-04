@@ -12,7 +12,7 @@ export default function Header({ title }: { title: string }) {
   return (
     <AntHeader className="header">
       <div className="header-inner">
-        <span>Header for {title}</span>
+        <span className="header-title">Header for {title}</span>
         {active ? (
           <Button type="primary" shape="round" onClick={() => setIsOpen(true)}>
             <span>

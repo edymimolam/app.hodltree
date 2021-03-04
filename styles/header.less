@@ -7,6 +7,16 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  height: @layout-header-height;
   max-width: @main-content-width;
   margin: 0 auto;
+}
+
+@media screen and (max-width: @screen-sm) {
+  .header-inner {
+    justify-content: flex-end;
+    .header-title {
+      display: none;
+    }
+  }
 }
