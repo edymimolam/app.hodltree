@@ -1,5 +1,6 @@
 import AppLayout from "../components/AppLayout";
-import { Row, Col, Card, Button } from "antd";
+import { shortenAddress } from "../utils";
+import { Row, Col, Card, Button, Tabs, Table } from "antd";
 
 const data = {
   totalEarnings: 12234567.34,
@@ -27,7 +28,95 @@ const data = {
       borrowed: 456789,
     },
   ],
+  topKeepers: [
+    {
+      key: 1,
+      address: "0x727818Bf466B603824224B433eE40179F4059A52",
+      contribution: 12345678,
+    },
+    {
+      key: 2,
+      address: "0x727818Bf466B603824224B433eE40179F4059A52",
+      contribution: 12345678,
+    },
+    {
+      key: 3,
+      address: "0x727818Bf466B603824224B433eE40179F4059A52",
+      contribution: 12345678,
+    },
+    {
+      key: 4,
+      address: "0x727818Bf466B603824224B433eE40179F4059A52",
+      contribution: 12345678,
+    },
+    {
+      key: 5,
+      address: "0x727818Bf466B603824224B433eE40179F4059A52",
+      contribution: 12345678,
+    },
+  ],
+  topProviders: [
+    {
+      key: 1,
+      address: "0x3a22a3a9d548b6e090fa288aef9a23d1b8cdb080",
+      contribution: 87654321,
+    },
+    {
+      key: 2,
+      address: "0x3a22a3a9d548b6e090fa288aef9a23d1b8cdb080",
+      contribution: 87654321,
+    },
+    {
+      key: 3,
+      address: "0x3a22a3a9d548b6e090fa288aef9a23d1b8cdb080",
+      contribution: 87654321,
+    },
+    {
+      key: 4,
+      address: "0x3a22a3a9d548b6e090fa288aef9a23d1b8cdb080",
+      contribution: 87654321,
+    },
+    {
+      key: 5,
+      address: "0x3a22a3a9d548b6e090fa288aef9a23d1b8cdb080",
+      contribution: 87654321,
+    },
+    {
+      key: 6,
+      address: "0x3a22a3a9d548b6e090fa288aef9a23d1b8cdb080",
+      contribution: 87654321,
+    },
+    {
+      key: 7,
+      address: "0x3a22a3a9d548b6e090fa288aef9a23d1b8cdb080",
+      contribution: 87654321,
+    },
+    {
+      key: 8,
+      address: "0x3a22a3a9d548b6e090fa288aef9a23d1b8cdb080",
+      contribution: 87654321,
+    },
+  ],
 };
+
+const columns = [
+  {
+    title: "Position",
+    dataIndex: "key",
+    key: "position",
+  },
+  {
+    title: "Address",
+    dataIndex: "address",
+    key: "address",
+    render: (adr: string) => shortenAddress(adr, 5),
+  },
+  {
+    title: "Contribution",
+    dataIndex: "contribution",
+    key: "contribution",
+  },
+];
 
 export default function FlashLoans() {
   return (
@@ -67,7 +156,7 @@ export default function FlashLoans() {
         </Row>
       </div>
       <Row gutter={[16, 16]} justify="center">
-        <Col span={24}>
+        <Col xs={24} md={12}>
           <div className="fl-tokens">
             <div className="fl-tokens-header">
               <div className="fl-tokens-header__item">Asset</div>
@@ -92,6 +181,24 @@ export default function FlashLoans() {
               </Card>
             ))}
           </div>
+        </Col>
+        <Col xs={24} md={12}>
+          <Tabs defaultActiveKey="1" type="card" className="fl-tops">
+            <Tabs.TabPane tab="Top Keepers" key="1">
+              <Table
+                columns={columns}
+                dataSource={data.topKeepers}
+                pagination={false}
+              />
+            </Tabs.TabPane>
+            <Tabs.TabPane tab="Top Liquidity Providers" key="2">
+              <Table
+                columns={columns}
+                dataSource={data.topProviders}
+                pagination={false}
+              />
+            </Tabs.TabPane>
+          </Tabs>
         </Col>
       </Row>
     </AppLayout>
