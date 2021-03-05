@@ -10,13 +10,16 @@ const { Content, Footer } = Layout;
 type Props = {
   children?: ReactNode;
   title?: string;
+  isDataFetching?: boolean;
 };
 
 export default function AppLayout({
   children,
   title = "This is the default title",
+  isDataFetching,
 }: Props) {
   const IsRouterLoading = useIsRouterLoading();
+  const isLoading = isDataFetching || IsRouterLoading;
   return (
     <div>
       <Head>
@@ -30,7 +33,7 @@ export default function AppLayout({
           <Header title={title}></Header>
           <Content>
             <div className="main-content-container">
-              {IsRouterLoading ? (
+              {isLoading ? (
                 <Alert
                   type="info"
                   className="spin-container"

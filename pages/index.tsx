@@ -1,4 +1,5 @@
 import AppLayout from "../components/AppLayout";
+import { useServerAPI } from "../hooks/useServerAPI";
 import { shortenAddress } from "../utils";
 import { Row, Col, Card, Button, Tabs, Table } from "antd";
 
@@ -119,8 +120,11 @@ const columns = [
 ];
 
 export default function FlashLoans() {
+  const { data: serverData, isLoading } = useServerAPI();
+  console.log("data -->", serverData);
+
   return (
-    <AppLayout title="Flash Loans">
+    <AppLayout title="Flash Loans" isDataFetching={isLoading}>
       <div className="fl-row">
         <Row gutter={[16, 16]} align="stretch">
           <Col xs={24} md={12}>
