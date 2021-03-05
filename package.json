@@ -16,6 +16,7 @@
     "dayjs": "^1.10.4",
     "less": "^4.1.1",
     "next": "^10.0.7",
+    "numeral": "^2.0.6",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "swr": "^0.4.2",
@@ -23,6 +24,7 @@
   },
   "devDependencies": {
     "@types/node": "^14.14.31",
+    "@types/numeral": "^2.0.1",
     "@types/react": "^17.0.2",
     "@types/react-dom": "^17.0.1",
     "prettier": "^2.2.1",

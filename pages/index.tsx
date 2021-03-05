@@ -2,8 +2,9 @@ import AppLayout from "../components/AppLayout";
 import { useServerAPI } from "../hooks/useServerAPI";
 import { shortenAddress } from "../utils";
 import { Row, Col, Card, Button, Tabs, Table } from "antd";
+import numeral from "numeral";
 
-const data = {
+const mockData = {
   totalEarnings: 12234567.34,
   apy: 25.567,
   tokens: [
@@ -120,91 +121,99 @@ const columns = [
 ];
 
 export default function FlashLoans() {
-  const { data: serverData, isLoading } = useServerAPI();
-  console.log("data -->", serverData);
+  const { data, isLoading } = useServerAPI();
+  console.log("data -->", data);
 
   return (
     <AppLayout title="Flash Loans" isDataFetching={isLoading}>
-      <div className="fl-row">
-        <Row gutter={[16, 16]} align="stretch">
-          <Col xs={24} md={12}>
-            <Card className="fl-earnings">
-              <div className="fl-earnings__left flex-column-jsb">
-                <h3 className="fl-earnings__small-text">Total Earnings</h3>
-                <span className="fl-earnings__big-text">
-                  $ {data.totalEarnings}
-                </span>
-              </div>
-              <div className="fl-earnings__right flex-column-jsb">
-                <h3 className="fl-earnings__small-text">APY</h3>
-                <span className="fl-earnings__big-text">{data.apy}%</span>
-              </div>
-            </Card>
-          </Col>
-          <Col xs={24} md={12}>
-            <Card className="fl-balance">
-              <div className="fl-balance__left flex-column-jsb">
-                <h3 className="fl-balance__small-text">My Balance</h3>
-                <span className="fl-balance__big-text">$ 12323423</span>
-              </div>
-              <div className="fl-balance__right">
-                <Button size="large" type="primary">
-                  Deposit
-                </Button>
-                <Button size="large" type="primary">
-                  Withdraw
-                </Button>
-              </div>
-            </Card>
-          </Col>
-        </Row>
-      </div>
-      <Row gutter={[16, 16]} justify="center">
-        <Col xs={24} md={12}>
-          <div className="fl-tokens">
-            <div className="fl-tokens-header">
-              <div className="fl-tokens-header__item">Asset</div>
-              <div className="fl-tokens-header__item">Liquidity</div>
-              <div className="fl-tokens-header__item">Total Borrowed</div>
-            </div>
-            {data.tokens.map((tkn, i) => (
-              <Card key={i + tkn.symbol} className="fl-tokens-container">
-                <div className="fl-token">
-                  <img className="fl-token-icon" src={tkn.img}></img>
-                  <div className="fl-token__item fl-token-asset flex-column-jsb ">
-                    <span className="fl-token-asset__symbol">{tkn.symbol}</span>
-                    <span className="fl-token-asset__name">{tkn.name}</span>
+      {data && (
+        <>
+          <div className="fl-row">
+            <Row gutter={[16, 16]} align="stretch">
+              <Col xs={24} md={12}>
+                <Card className="fl-earnings">
+                  <div className="fl-earnings__left flex-column-jsb">
+                    <h3 className="fl-earnings__small-text">Total Earnings</h3>
+                    <span className="fl-earnings__big-text">
+                      {numeral(data.total_earnings).format("$0,0[.]00")}
+                    </span>
                   </div>
-                  <div className="fl-token__item ">
-                    <span>$ {tkn.liquidity}</span>
+                  <div className="fl-earnings__right flex-column-jsb">
+                    <h3 className="fl-earnings__small-text">APY</h3>
+                    <span className="fl-earnings__big-text">
+                      {numeral(data.apy).format("0[.]00")}%
+                    </span>
                   </div>
-                  <div className="fl-token__item">
-                    <span>$ {tkn.borrowed}</span>
+                </Card>
+              </Col>
+              <Col xs={24} md={12}>
+                <Card className="fl-balance">
+                  <div className="fl-balance__left flex-column-jsb">
+                    <h3 className="fl-balance__small-text">My Balance</h3>
+                    <span className="fl-balance__big-text">$ 12323423</span>
                   </div>
-                </div>
-              </Card>
-            ))}
+                  <div className="fl-balance__right">
+                    <Button size="large" type="primary">
+                      Deposit
+                    </Button>
+                    <Button size="large" type="primary">
+                      Withdraw
+                    </Button>
+                  </div>
+                </Card>
+              </Col>
+            </Row>
           </div>
-        </Col>
-        <Col xs={24} md={12}>
-          <Tabs defaultActiveKey="1" type="card" className="fl-tops">
-            <Tabs.TabPane tab="Top Keepers" key="1">
-              <Table
-                columns={columns}
-                dataSource={data.topKeepers}
-                pagination={false}
-              />
-            </Tabs.TabPane>
-            <Tabs.TabPane tab="Top Liquidity Providers" key="2">
-              <Table
-                columns={columns}
-                dataSource={data.topProviders}
-                pagination={false}
-              />
-            </Tabs.TabPane>
-          </Tabs>
-        </Col>
-      </Row>
+          <Row gutter={[16, 16]} justify="center">
+            <Col xs={24} md={12}>
+              <div className="fl-tokens">
+                <div className="fl-tokens-header">
+                  <div className="fl-tokens-header__item">Asset</div>
+                  <div className="fl-tokens-header__item">Liquidity</div>
+                  <div className="fl-tokens-header__item">Total Borrowed</div>
+                </div>
+                {mockData.tokens.map((tkn, i) => (
+                  <Card key={i + tkn.symbol} className="fl-tokens-container">
+                    <div className="fl-token">
+                      <img className="fl-token-icon" src={tkn.img}></img>
+                      <div className="fl-token__item fl-token-asset flex-column-jsb ">
+                        <span className="fl-token-asset__symbol">
+                          {tkn.symbol}
+                        </span>
+                        <span className="fl-token-asset__name">{tkn.name}</span>
+                      </div>
+                      <div className="fl-token__item ">
+                        <span>$ {tkn.liquidity}</span>
+                      </div>
+                      <div className="fl-token__item">
+                        <span>$ {tkn.borrowed}</span>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </Col>
+            <Col xs={24} md={12}>
+              <Tabs defaultActiveKey="1" type="card" className="fl-tops">
+                <Tabs.TabPane tab="Top Keepers" key="1">
+                  <Table
+                    columns={columns}
+                    dataSource={mockData.topKeepers}
+                    pagination={false}
+                  />
+                </Tabs.TabPane>
+                <Tabs.TabPane tab="Top Liquidity Providers" key="2">
+                  <Table
+                    columns={columns}
+                    dataSource={mockData.topProviders}
+                    pagination={false}
+                  />
+                </Tabs.TabPane>
+              </Tabs>
+            </Col>
+          </Row>
+        </>
+      )}
     </AppLayout>
   );
 }
