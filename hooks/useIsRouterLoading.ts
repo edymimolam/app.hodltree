@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 
-export function useIsLoading() {
+export function useIsRouterLoading() {
   const router = useRouter();
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isRouterLoading, setIsRouterLoading] = useState(false);
 
   useEffect(() => {
     const handleStart = (url: string) =>
-      url !== router.asPath && setIsLoading(true);
+      url !== router.asPath && setIsRouterLoading(true);
     const handleComplete = (url: string) =>
-      url === router.asPath && setIsLoading(false);
+      url === router.asPath && setIsRouterLoading(false);
 
     router.events.on("routeChangeStart", handleStart);
     router.events.on("routeChangeComplete", handleComplete);
@@ -23,5 +23,5 @@ export function useIsLoading() {
     };
   });
 
-  return isLoading;
+  return isRouterLoading;
 }

@@ -4,7 +4,7 @@ import Head from "next/head";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import { Layout, Spin, Alert } from "antd";
-import { useIsLoading } from "../hooks/useIsLoading";
+import { useIsRouterLoading } from "../hooks/useIsRouterLoading";
 const { Content, Footer } = Layout;
 
 type Props = {
@@ -16,7 +16,7 @@ export default function AppLayout({
   children,
   title = "This is the default title",
 }: Props) {
-  const isLoading = useIsLoading();
+  const IsRouterLoading = useIsRouterLoading();
   return (
     <div>
       <Head>
@@ -30,7 +30,7 @@ export default function AppLayout({
           <Header title={title}></Header>
           <Content>
             <div className="main-content-container">
-              {isLoading ? (
+              {IsRouterLoading ? (
                 <Alert
                   type="info"
                   className="spin-container"
