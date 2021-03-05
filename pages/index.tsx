@@ -101,7 +101,7 @@ const mockData = {
   ],
 };
 
-const columns = [
+const topTableColumns = [
   {
     title: "Position",
     dataIndex: "key",
@@ -114,16 +114,20 @@ const columns = [
     render: (adr: string) => shortenAddress(adr, 5),
   },
   {
-    title: "Contribution",
-    dataIndex: "contribution",
-    key: "contribution",
+    title: "Contributions",
+    dataIndex: "contribute",
+    key: "contributions",
+    render: (num: number) => numeral(num).format("$0,0[.]00"),
   },
 ];
 
+const prepareDataForTable = (
+  data: { address: string; contribute: number }[]
+): { address: string; contribute: number; key: number }[] =>
+  data.map((v, i) => ({ ...v, key: i + 1 }));
+
 export default function FlashLoans() {
   const { data, isLoading } = useServerAPI();
-  console.log("data -->", data);
-
   return (
     <AppLayout title="Flash Loans" isDataFetching={isLoading}>
       {data && (
@@ -197,15 +201,15 @@ export default function FlashLoans() {
               <Tabs defaultActiveKey="1" type="card" className="fl-tops">
                 <Tabs.TabPane tab="Top Keepers" key="1">
                   <Table
-                    columns={columns}
-                    dataSource={mockData.topKeepers}
+                    columns={topTableColumns}
+                    dataSource={prepareDataForTable(data.top.keepers)}
                     pagination={false}
                   />
                 </Tabs.TabPane>
                 <Tabs.TabPane tab="Top Liquidity Providers" key="2">
                   <Table
-                    columns={columns}
-                    dataSource={mockData.topProviders}
+                    columns={topTableColumns}
+                    dataSource={prepareDataForTable(data.top.lp)}
                     pagination={false}
                   />
                 </Tabs.TabPane>
