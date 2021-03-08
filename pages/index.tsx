@@ -139,11 +139,15 @@ export default function FlashLoans() {
                               {tkn.name}
                             </span>
                           </div>
-                          <div className="fl-token__item ">
-                            <span>$ {tkn.liquidity}</span>
+                          <div className="fl-token__item txt-upper">
+                            <span>
+                              {numeral(tkn.liquidity).format("($ 0.000a)")}
+                            </span>
                           </div>
-                          <div className="fl-token__item">
-                            <span>$ {tkn.borrowed}</span>
+                          <div className="fl-token__item txt-upper">
+                            <span>
+                              {numeral(tkn.borrowed).format("($ 0.000a)")}
+                            </span>
                           </div>
                         </div>
                       </Card>
