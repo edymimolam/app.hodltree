@@ -1,6 +1,6 @@
 import AppLayout from "../components/AppLayout";
 import { useServerAPI } from "../hooks/useServerAPI";
-import { shortenAddress } from "../utils";
+import { shortenAddress, addKeyField } from "../utils";
 import { Row, Col, Card, Button, Tabs, Table } from "antd";
 import numeral from "numeral";
 
@@ -121,11 +121,6 @@ const topTableColumns = [
   },
 ];
 
-const prepareDataForTable = (
-  data: { address: string; contribute: number }[]
-): { address: string; contribute: number; key: number }[] =>
-  data.map((v, i) => ({ ...v, key: i + 1 }));
-
 export default function FlashLoans() {
   const { data, isLoading } = useServerAPI();
   return (
@@ -202,14 +197,14 @@ export default function FlashLoans() {
                 <Tabs.TabPane tab="Top Keepers" key="1">
                   <Table
                     columns={topTableColumns}
-                    dataSource={prepareDataForTable(data.top.keepers)}
+                    dataSource={addKeyField(data.top.keepers)}
                     pagination={false}
                   />
                 </Tabs.TabPane>
                 <Tabs.TabPane tab="Top Liquidity Providers" key="2">
                   <Table
                     columns={topTableColumns}
-                    dataSource={prepareDataForTable(data.top.lp)}
+                    dataSource={addKeyField(data.top.lp)}
                     pagination={false}
                   />
                 </Tabs.TabPane>

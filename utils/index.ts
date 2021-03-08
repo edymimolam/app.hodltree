@@ -66,3 +66,8 @@ export function getUnitByDecimal(decimals: any) {
       return "ether";
   }
 }
+
+export const addKeyField = (
+  data: { address: string; contribute: number }[]
+): { address: string; contribute: number; key: number }[] =>
+  data.map((v, i) => ({ ...v, key: i + 1 }));
