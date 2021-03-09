@@ -14,11 +14,15 @@ interface IToken {
   img?: string;
   name?: string;
   symbol: string;
-  liquidity?: number;
+  liquidity?: string;
   borrowed?: number;
 }
 
-const liquidityPoolAddress = "0xEcb54767CF461B18c06B68BAACeC0fD65bCE6ECC";
+const liquidityPoolAddress = "0x56042714e20E118C886e3Bf8B5d13f189F776162";
+let liquidityPoolInstance: any;
+const tokensIntances: any[] = [];
+const tokensAddressesToIndexes = new Map();
+let balances: string[] = [];
 
 const tokensIcons: { [key: string]: string } = {
   USDC: "/images/usdc-icon.svg",
@@ -56,25 +60,48 @@ export default function FlashLoans() {
 
   useEffect(() => {
     if (!data || !active || tokens) return;
-    Object.keys(data.total_borrowed).map(async (adr) => {
-      const tokenInst = new library.eth.Contract(iERC20TokenAbi, adr);
 
-      const tokenDecimals = await tokenInst.methods.decimals().call();
-      const rawLiquidity = await tokenInst.methods
-        .balanceOf(liquidityPoolAddress)
+    liquidityPoolInstance = new library.eth.Contract(
+      liquidityPoolABI,
+      liquidityPoolAddress
+    );
+
+    (async () => {
+      const tokensNumber = await liquidityPoolInstance.methods
+        .N_TOKENS()
         .call();
-      const liquidity = +fromWei(rawLiquidity, getUnitByDecimal(tokenDecimals));
 
-      const token: IToken = {
-        name: await tokenInst.methods.name().call(),
-        symbol: await tokenInst.methods.symbol().call(),
-        liquidity,
-        borrowed: data.total_borrowed[adr],
-      };
-      token.img = tokensIcons[token.symbol];
-      setTokens((tkns) => (tkns ? [...tkns, token] : [token]));
-    });
-  }, [data, active]);
+      for (let i = 0; i < tokensNumber; i++) {
+        const tokenAddress = await liquidityPoolInstance.methods
+          .tokens(i)
+          .call();
+        tokensIntances.push(
+          new library.eth.Contract(iERC20TokenAbi, tokenAddress)
+        );
+        tokensAddressesToIndexes.set(tokenAddress, i);
+      }
+      balances = await liquidityPoolInstance.methods.balances().call();
+
+      tokensIntances.forEach(async (tokenInst) => {
+        const tokenDecimals = await tokenInst.methods.decimals().call();
+        const rawLiquidity =
+          balances[tokensAddressesToIndexes.get(tokenInst._address)];
+        const liquidity = fromWei(
+          rawLiquidity,
+          getUnitByDecimal(tokenDecimals)
+        );
+
+        const token: IToken = {
+          name: await tokenInst.methods.name().call(),
+          symbol: await tokenInst.methods.symbol().call(),
+          liquidity,
+          borrowed: data.total_borrowed[tokenInst._address],
+        };
+        token.img = tokensIcons[token.symbol];
+        setTokens((tkns) => (tkns ? [...tkns, token] : [token]));
+      });
+    })();
+  }, [data, active, tokens]);
 
   return (
     <AppLayout title="Flash Loans" isDataFetching={isLoading}>
