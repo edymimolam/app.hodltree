@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 import AppLayout from "../components/AppLayout";
 import { useServerAPI } from "../hooks/useServerAPI";
-import { shortenAddress, addKeyField, getUnitByDecimal } from "../utils";
+import { shortenAddress, addKeyField, fromWeiByDecimals } from "../utils";
 import { Row, Col, Card, Button, Tabs, Table } from "antd";
 import { useWeb3React } from "@web3-react/core";
 import iERC20TokenAbi from "../config/ABI/IERC20abi.json";
 import liquidityPoolABI from "../config/ABI/LiquidityPool.json";
 import numeral from "numeral";
-import web3 from "web3";
-const { fromWei } = web3.utils;
 
 interface IToken {
   img?: string;
@@ -83,12 +81,11 @@ export default function FlashLoans() {
       balances = await liquidityPoolInstance.methods.balances().call();
 
       tokensIntances.forEach(async (tokenInst) => {
-        const tokenDecimals = await tokenInst.methods.decimals().call();
-        const rawLiquidity =
-          balances[tokensAddressesToIndexes.get(tokenInst._address)];
-        const liquidity = fromWei(
-          rawLiquidity,
-          getUnitByDecimal(tokenDecimals)
+        tokenInst._decimals = await tokenInst.methods.decimals().call();
+
+        const liquidity = fromWeiByDecimals(
+          balances[tokensAddressesToIndexes.get(tokenInst._address)],
+          tokenInst._decimals
         );
 
         const token: IToken = {
