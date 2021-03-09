@@ -24,6 +24,9 @@ const tokensIcons: { [key: string]: string } = {
   USDC: "/images/usdc-icon.svg",
   USDT: "/images/usdt-icon.svg",
   DAI: "/images/dai-icon.svg",
+  GUSD: "/images/gusd-icon.svg",
+  TUSD: "/images/tusd-icon.svg",
+  sUSD: "/images/susd-icon.svg",
 };
 
 const topTableColumns = [
