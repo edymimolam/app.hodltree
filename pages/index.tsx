@@ -5,6 +5,7 @@ import { shortenAddress, addKeyField, getUnitByDecimal } from "../utils";
 import { Row, Col, Card, Button, Tabs, Table } from "antd";
 import { useWeb3React } from "@web3-react/core";
 import iERC20TokenAbi from "../config/ABI/IERC20abi.json";
+import liquidityPoolABI from "../config/ABI/LiquidityPool.json";
 import numeral from "numeral";
 import web3 from "web3";
 const { fromWei } = web3.utils;
