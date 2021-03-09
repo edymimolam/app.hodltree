@@ -1,3 +1,7 @@
+import BN from "bn.js";
+import web3 from "web3";
+const { fromWei } = web3.utils;
+
 export function log(...params: any) {
   if (process.env.NODE_ENV !== "production") {
     console.log(...params);
@@ -42,6 +46,8 @@ export function getUnitByDecimal(decimals: any) {
   switch (decimals) {
     case 1:
       return "wei";
+    case 2:
+      return "kwei";
     case 3:
       return "kwei";
     case 6:
@@ -65,6 +71,11 @@ export function getUnitByDecimal(decimals: any) {
     default:
       return "ether";
   }
+}
+
+export function fromWeiByDecimals(num: string | BN, decimals: string): string {
+  const output = fromWei(num, getUnitByDecimal(decimals));
+  return +decimals === 2 ? `${+output * 10}` : output;
 }
 
 export const addKeyField = (
