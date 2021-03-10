@@ -3,7 +3,7 @@ import AppLayout from "../components/AppLayout";
 import { useServerAPI } from "../hooks/useServerAPI";
 import { useWeb3Connect } from "../hooks/useWeb3Connect";
 import { shortenAddress, addKeyField, fromWeiByDecimals } from "../utils";
-import { Row, Col, Card, Button, Tabs, Table } from "antd";
+import { Row, Col, Card, Button, Tabs, Table, Drawer } from "antd";
 import { IERC20ABI } from "../config/ABI/IERC20";
 import { LiquidityPoolABI } from "../config/ABI/LiquidityPool";
 import numeral from "numeral";
@@ -59,6 +59,7 @@ const topTableColumns = [
 
 export default function FlashLoans() {
   const [tokensCards, setTokensCards] = useState<ITokenCard[]>();
+  const [isDepositVisible, setIsDepositVisible] = useState<boolean>(false);
   const { data, isLoading } = useServerAPI();
 
   useWeb3Connect();
@@ -148,7 +149,11 @@ export default function FlashLoans() {
                     <span className="fl-balance__big-text">$ 12323423</span>
                   </div>
                   <div className="fl-balance__right">
-                    <Button size="large" type="primary">
+                    <Button
+                      size="large"
+                      type="primary"
+                      onClick={() => setIsDepositVisible(true)}
+                    >
                       Deposit
                     </Button>
                     <Button size="large" type="primary">
@@ -218,6 +223,15 @@ export default function FlashLoans() {
               </Tabs>
             </Col>
           </Row>
+          <Drawer
+            visible={isDepositVisible}
+            width={"80%"}
+            title="Title"
+            className="fl-drawer"
+            onClose={() => setIsDepositVisible(false)}
+          >
+            <h1>I'm here</h1>
+          </Drawer>
         </>
       )}
     </AppLayout>
