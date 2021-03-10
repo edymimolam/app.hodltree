@@ -10,6 +10,8 @@ import numeral from "numeral";
 import Web3 from "web3";
 
 interface ITokenCard {
+  address: string;
+  isLoading: boolean;
   img?: string;
   name?: string;
   symbol: string;
@@ -56,13 +58,18 @@ const topTableColumns = [
 ];
 
 export default function FlashLoans() {
-  const [tokens, setTokens] = useState<ITokenCard[]>();
+  const [tokensCards, setTokensCards] = useState<ITokenCard[]>();
   const { data, isLoading } = useServerAPI();
 
   useWeb3Connect();
 
   useEffect(() => {
-    if (!data || tokens) return;
+    if (!data || tokensCards) return;
+
+    const initialTokensCards: ITokenCard[] = Object.keys(
+      data.total_borrowed
+    ).map((key: string) => ({ address: key, isLoading: true, symbol: "" }));
+    setTokensCards(initialTokensCards);
 
     liquidityPoolInstance = new web3Infura.eth.Contract(
       LiquidityPoolABI,
@@ -93,17 +100,24 @@ export default function FlashLoans() {
           tokenInst._decimals
         );
 
-        const token: ITokenCard = {
+        const tokenCard: ITokenCard = {
+          address: tokenInst._address,
+          isLoading: false,
           name: await tokenInst.methods.name().call(),
           symbol: await tokenInst.methods.symbol().call(),
           liquidity,
           borrowed: data.total_borrowed[tokenInst._address],
         };
-        token.img = tokensIcons[token.symbol];
-        setTokens((tkns) => (tkns ? [...tkns, token] : [token]));
+        tokenCard.img = tokensIcons[tokenCard.symbol];
+        setTokensCards((tkns = []) =>
+          [
+            ...tkns.filter((tkn) => tkn.address !== tokenCard.address),
+            tokenCard,
+          ].reverse()
+        );
       });
     })();
-  }, [data, tokens]);
+  }, [data, tokensCards]);
 
   return (
     <AppLayout title="Flash Loans" isDataFetching={isLoading}>
@@ -148,45 +162,41 @@ export default function FlashLoans() {
           <Row gutter={[16, 16]} justify="center">
             <Col xs={24} md={12}>
               <div className="fl-tokens">
-                {tokens && (
-                  <>
-                    <div className="fl-tokens-header">
-                      <div className="fl-tokens-header__item">Asset</div>
-                      <div className="fl-tokens-header__item">Liquidity</div>
-                      <div className="fl-tokens-header__item">
-                        Total Borrowed
-                      </div>
-                    </div>
-                    {tokens.map((tkn, i) => (
-                      <Card
-                        key={i + tkn?.symbol}
-                        className="fl-tokens-container"
-                      >
-                        <div className="fl-token">
-                          <img className="fl-token-icon" src={tkn.img}></img>
-                          <div className="fl-token__item fl-token-asset flex-column-jsb ">
-                            <span className="fl-token-asset__symbol">
-                              {tkn.symbol}
-                            </span>
-                            <span className="fl-token-asset__name">
-                              {tkn.name}
-                            </span>
-                          </div>
-                          <div className="fl-token__item txt-upper">
-                            <span>
-                              {numeral(tkn.liquidity).format("($ 0.000a)")}
-                            </span>
-                          </div>
-                          <div className="fl-token__item txt-upper">
-                            <span>
-                              {numeral(tkn.borrowed).format("($ 0.000a)")}
-                            </span>
-                          </div>
+                <div className="fl-tokens-header">
+                  <div className="fl-tokens-header__item">Asset</div>
+                  <div className="fl-tokens-header__item">Liquidity</div>
+                  <div className="fl-tokens-header__item">Total Borrowed</div>
+                </div>
+                {tokensCards &&
+                  tokensCards.map((tkn) => (
+                    <Card
+                      key={tkn.address}
+                      className="fl-tokens-container"
+                      loading={tkn.isLoading}
+                    >
+                      <div className="fl-token">
+                        <img className="fl-token-icon" src={tkn.img}></img>
+                        <div className="fl-token__item fl-token-asset flex-column-jsb ">
+                          <span className="fl-token-asset__symbol">
+                            {tkn.symbol}
+                          </span>
+                          <span className="fl-token-asset__name">
+                            {tkn.name}
+                          </span>
                         </div>
-                      </Card>
-                    ))}
-                  </>
-                )}
+                        <div className="fl-token__item txt-upper">
+                          <span>
+                            {numeral(tkn.liquidity).format("($ 0.000a)")}
+                          </span>
+                        </div>
+                        <div className="fl-token__item txt-upper">
+                          <span>
+                            {numeral(tkn.borrowed).format("($ 0.000a)")}
+                          </span>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
               </div>
             </Col>
             <Col xs={24} md={12}>
