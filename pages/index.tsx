@@ -3,10 +3,11 @@ import AppLayout from "../components/AppLayout";
 import { useServerAPI } from "../hooks/useServerAPI";
 import { shortenAddress, addKeyField, fromWeiByDecimals } from "../utils";
 import { Row, Col, Card, Button, Tabs, Table } from "antd";
-import { useWeb3React } from "@web3-react/core";
 import iERC20TokenAbi from "../config/ABI/IERC20abi.json";
 import liquidityPoolABI from "../config/ABI/LiquidityPool.json";
 import numeral from "numeral";
+import Web3 from "web3";
+import { AbiItem } from "web3-utils";
 
 interface IToken {
   img?: string;
@@ -15,6 +16,9 @@ interface IToken {
   liquidity?: string;
   borrowed?: number;
 }
+
+const infuraUrl = `https://kovan.infura.io/v3/7aa91bdccc17426b9c2c4c9ca3f414d3`;
+const web3Infura = new Web3(new Web3.providers.HttpProvider(infuraUrl));
 
 const liquidityPoolAddress = "0x56042714e20E118C886e3Bf8B5d13f189F776162";
 let liquidityPoolInstance: any;
@@ -54,13 +58,12 @@ const topTableColumns = [
 export default function FlashLoans() {
   const [tokens, setTokens] = useState<IToken[]>();
   const { data, isLoading } = useServerAPI();
-  const { library, active } = useWeb3React();
 
   useEffect(() => {
-    if (!data || !active || tokens) return;
+    if (!data || tokens) return;
 
-    liquidityPoolInstance = new library.eth.Contract(
-      liquidityPoolABI,
+    liquidityPoolInstance = new web3Infura.eth.Contract(
+      liquidityPoolABI as AbiItem[],
       liquidityPoolAddress
     );
 
@@ -74,7 +77,7 @@ export default function FlashLoans() {
           .tokens(i)
           .call();
         tokensIntances.push(
-          new library.eth.Contract(iERC20TokenAbi, tokenAddress)
+          new web3Infura.eth.Contract(iERC20TokenAbi as AbiItem[], tokenAddress)
         );
         tokensAddressesToIndexes.set(tokenAddress, i);
       }
@@ -98,7 +101,7 @@ export default function FlashLoans() {
         setTokens((tkns) => (tkns ? [...tkns, token] : [token]));
       });
     })();
-  }, [data, active, tokens]);
+  }, [data, tokens]);
 
   return (
     <AppLayout title="Flash Loans" isDataFetching={isLoading}>
