@@ -8,6 +8,7 @@ import { IERC20ABI } from "../config/ABI/IERC20";
 import { LiquidityPoolABI } from "../config/ABI/LiquidityPool";
 import numeral from "numeral";
 import Web3 from "web3";
+import BN from "bn.js";
 
 interface ITokenCard {
   address: string;
@@ -17,6 +18,7 @@ interface ITokenCard {
   symbol: string;
   liquidity?: string;
   borrowed?: number;
+  balance?: BN;
 }
 
 const infuraUrl = `https://kovan.infura.io/v3/7aa91bdccc17426b9c2c4c9ca3f414d3`;
