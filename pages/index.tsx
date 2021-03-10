@@ -9,7 +9,7 @@ import { LiquidityPoolABI } from "../config/ABI/LiquidityPool";
 import numeral from "numeral";
 import Web3 from "web3";
 
-interface IToken {
+interface ITokenCard {
   img?: string;
   name?: string;
   symbol: string;
@@ -56,7 +56,7 @@ const topTableColumns = [
 ];
 
 export default function FlashLoans() {
-  const [tokens, setTokens] = useState<IToken[]>();
+  const [tokens, setTokens] = useState<ITokenCard[]>();
   const { data, isLoading } = useServerAPI();
 
   useWeb3Connect();
@@ -93,7 +93,7 @@ export default function FlashLoans() {
           tokenInst._decimals
         );
 
-        const token: IToken = {
+        const token: ITokenCard = {
           name: await tokenInst.methods.name().call(),
           symbol: await tokenInst.methods.symbol().call(),
           liquidity,
