@@ -3,11 +3,10 @@ import AppLayout from "../components/AppLayout";
 import { useServerAPI } from "../hooks/useServerAPI";
 import { shortenAddress, addKeyField, fromWeiByDecimals } from "../utils";
 import { Row, Col, Card, Button, Tabs, Table } from "antd";
-import iERC20TokenAbi from "../config/ABI/IERC20abi.json";
-import liquidityPoolABI from "../config/ABI/LiquidityPool.json";
+import { IERC20ABI } from "../config/ABI/IERC20";
+import { LiquidityPoolABI } from "../config/ABI/LiquidityPool";
 import numeral from "numeral";
 import Web3 from "web3";
-import { AbiItem } from "web3-utils";
 
 interface IToken {
   img?: string;
@@ -63,7 +62,7 @@ export default function FlashLoans() {
     if (!data || tokens) return;
 
     liquidityPoolInstance = new web3Infura.eth.Contract(
-      liquidityPoolABI as AbiItem[],
+      LiquidityPoolABI,
       liquidityPoolAddress
     );
 
@@ -77,7 +76,7 @@ export default function FlashLoans() {
           .tokens(i)
           .call();
         tokensIntances.push(
-          new web3Infura.eth.Contract(iERC20TokenAbi as AbiItem[], tokenAddress)
+          new web3Infura.eth.Contract(IERC20ABI, tokenAddress)
         );
         tokensAddressesToIndexes.set(tokenAddress, i);
       }
