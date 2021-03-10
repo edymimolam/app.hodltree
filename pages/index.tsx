@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import AppLayout from "../components/AppLayout";
 import { useServerAPI } from "../hooks/useServerAPI";
+import { useWeb3Connect } from "../hooks/useWeb3Connect";
 import { shortenAddress, addKeyField, fromWeiByDecimals } from "../utils";
 import { Row, Col, Card, Button, Tabs, Table } from "antd";
 import { IERC20ABI } from "../config/ABI/IERC20";
@@ -57,6 +58,8 @@ const topTableColumns = [
 export default function FlashLoans() {
   const [tokens, setTokens] = useState<IToken[]>();
   const { data, isLoading } = useServerAPI();
+
+  useWeb3Connect();
 
   useEffect(() => {
     if (!data || tokens) return;
