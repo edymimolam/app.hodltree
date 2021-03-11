@@ -326,7 +326,7 @@ export default function FlashLoans() {
                       actions={[
                         <InputNumber
                           className="fl-deposit-card__input"
-                          bordered={false}
+                          size={"large"}
                         />,
                       ]}
                     >
