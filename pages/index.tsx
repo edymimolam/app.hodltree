@@ -39,8 +39,10 @@ interface ITokenContract {
   instance: Contract;
 }
 
-const infuraUrl = `https://kovan.infura.io/v3/7aa91bdccc17426b9c2c4c9ca3f414d3`;
-const web3Infura = new Web3(new Web3.providers.HttpProvider(infuraUrl));
+const infuraEndpoint = `wss://kovan.infura.io/ws/v3/7aa91bdccc17426b9c2c4c9ca3f414d3`;
+const web3Infura = new Web3(
+  new Web3.providers.WebsocketProvider(infuraEndpoint)
+);
 
 const liquidityPoolAddress = "0x56042714e20E118C886e3Bf8B5d13f189F776162";
 let liquidityPoolInstance: Contract = new web3Infura.eth.Contract(
@@ -176,7 +178,7 @@ export default function FlashLoans() {
     })();
   }, [active, tokensCards]);
 
-  // change infura http provider to wallet provider in tokens contracts when wallet connects
+  // change infura wss provider to wallet provider in tokens contracts when wallet connects
   // and when token contracts are ready
   useEffect(() => {
     if (
