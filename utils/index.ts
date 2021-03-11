@@ -73,7 +73,10 @@ export function getUnitByDecimal(decimals: any) {
   }
 }
 
-export function fromWeiByDecimals(num: string | BN, decimals: string): string {
+export function fromWeiByDecimals(
+  num: string | BN,
+  decimals: string = "18"
+): string {
   const output = fromWei(num, getUnitByDecimal(decimals));
   return +decimals === 2 ? `${+output * 10}` : output;
 }
