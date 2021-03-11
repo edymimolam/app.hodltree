@@ -262,14 +262,16 @@ export default function FlashLoans() {
                         active
                       >
                         <div className="fl-token">
-                          <img className="fl-token-icon" src={tkn.img}></img>
-                          <div className="fl-token__item fl-token-asset flex-column-jsb ">
-                            <span className="fl-token-asset__symbol">
-                              {tkn.symbol}
-                            </span>
-                            <span className="fl-token-asset__name">
-                              {tkn.name}
-                            </span>
+                          <div className="fl-token__item fl-token-asset">
+                            <img className="fl-token-icon" src={tkn.img}></img>
+                            <div className="flex-column-jsb">
+                              <span className="fl-token-asset__symbol">
+                                {tkn.symbol}
+                              </span>
+                              <span className="fl-token-asset__name">
+                                {tkn.name}
+                              </span>
+                            </div>
                           </div>
                           <div className="fl-token__item txt-upper">
                             <span>
