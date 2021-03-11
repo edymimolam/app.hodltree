@@ -259,6 +259,7 @@ export default function FlashLoans() {
                         loading={tkn.isLoading}
                         title={{ width: "100%" }}
                         paragraph={{ rows: 1, width: "100%" }}
+                        avatar
                         active
                       >
                         <div className="fl-token">
