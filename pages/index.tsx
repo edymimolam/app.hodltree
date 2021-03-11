@@ -254,32 +254,35 @@ export default function FlashLoans() {
                 </div>
                 {tokensCards &&
                   tokensCards.map((tkn) => (
-                    <Card
-                      key={tkn.address}
-                      className="fl-tokens-container"
-                      loading={tkn.isLoading}
-                    >
-                      <div className="fl-token">
-                        <img className="fl-token-icon" src={tkn.img}></img>
-                        <div className="fl-token__item fl-token-asset flex-column-jsb ">
-                          <span className="fl-token-asset__symbol">
-                            {tkn.symbol}
-                          </span>
-                          <span className="fl-token-asset__name">
-                            {tkn.name}
-                          </span>
+                    <Card key={tkn.address} className="fl-tokens-container">
+                      <Skeleton
+                        loading={tkn.isLoading}
+                        title={{ width: "100%" }}
+                        paragraph={{ rows: 1, width: "100%" }}
+                        active
+                      >
+                        <div className="fl-token">
+                          <img className="fl-token-icon" src={tkn.img}></img>
+                          <div className="fl-token__item fl-token-asset flex-column-jsb ">
+                            <span className="fl-token-asset__symbol">
+                              {tkn.symbol}
+                            </span>
+                            <span className="fl-token-asset__name">
+                              {tkn.name}
+                            </span>
+                          </div>
+                          <div className="fl-token__item txt-upper">
+                            <span>
+                              {numeral(tkn.liquidity).format("($ 0.000a)")}
+                            </span>
+                          </div>
+                          <div className="fl-token__item txt-upper">
+                            <span>
+                              {numeral(tkn.borrowed).format("($ 0.000a)")}
+                            </span>
+                          </div>
                         </div>
-                        <div className="fl-token__item txt-upper">
-                          <span>
-                            {numeral(tkn.liquidity).format("($ 0.000a)")}
-                          </span>
-                        </div>
-                        <div className="fl-token__item txt-upper">
-                          <span>
-                            {numeral(tkn.borrowed).format("($ 0.000a)")}
-                          </span>
-                        </div>
-                      </div>
+                      </Skeleton>
                     </Card>
                   ))}
               </div>
