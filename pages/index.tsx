@@ -39,7 +39,8 @@ interface ITokenContract {
   instance: Contract;
 }
 
-const infuraEndpoint = `wss://kovan.infura.io/ws/v3/7aa91bdccc17426b9c2c4c9ca3f414d3`;
+const infuraEndpoint =
+  "wss://kovan.infura.io/ws/v3/6573e783501746d2a6f9edd5721d1876";
 const web3Infura = new Web3(
   new Web3.providers.WebsocketProvider(infuraEndpoint)
 );
