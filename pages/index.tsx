@@ -4,7 +4,18 @@ import { useServerAPI } from "../hooks/useServerAPI";
 import { useWeb3Connect } from "../hooks/useWeb3Connect";
 import { useWeb3React } from "@web3-react/core";
 import { shortenAddress, addKeyField, fromWeiByDecimals } from "../utils";
-import { Row, Col, Card, Button, Tabs, Table, Drawer } from "antd";
+import {
+  Row,
+  Col,
+  Card,
+  Button,
+  Tabs,
+  Table,
+  Drawer,
+  Avatar,
+  Skeleton,
+  InputNumber,
+} from "antd";
 import { IERC20ABI } from "../config/ABI/IERC20";
 import { LiquidityPoolABI } from "../config/ABI/LiquidityPool";
 import numeral from "numeral";
@@ -89,6 +100,7 @@ export default function FlashLoans() {
       data.total_borrowed
     ).map((key: string) => ({ address: key, isLoading: true, symbol: "" }));
     setTokensCards(initialTokensCards);
+    setTokensDepositCards(initialTokensCards);
 
     (async () => {
       const tokensNumber = await liquidityPoolInstance.methods
@@ -293,10 +305,42 @@ export default function FlashLoans() {
             visible={isDepositVisible}
             width={"80%"}
             title="Title"
-            className="fl-drawer"
+            className="fl-drawer fl-deposit"
             onClose={() => setIsDepositVisible(false)}
           >
-            <h1>I'm here</h1>
+            <Row gutter={[16, 32]} justify="start">
+              {tokensDepositCards?.map((tkn) => (
+                <Col key={`deposit${tkn.address}`} xs={24} md={12} lg={8}>
+                  <Skeleton loading={tkn.isLoading} active avatar>
+                    <Card
+                      className="fl-deposit-card"
+                      actions={[
+                        <InputNumber
+                          className="fl-deposit-card__input"
+                          bordered={false}
+                        />,
+                      ]}
+                    >
+                      <Card.Meta
+                        avatar={<Avatar size="large" src={tkn.img} />}
+                        title={tkn.name}
+                        description={
+                          <span>
+                            {tkn.balance}{" "}
+                            <a
+                              className="fl-deposit-card__max"
+                              onClick={() => console.log("grr")}
+                            >
+                              Max
+                            </a>
+                          </span>
+                        }
+                      />
+                    </Card>
+                  </Skeleton>
+                </Col>
+              ))}
+            </Row>
           </Drawer>
         </>
       )}
