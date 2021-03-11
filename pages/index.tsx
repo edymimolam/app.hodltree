@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import AppLayout from "../components/AppLayout";
 import { useServerAPI } from "../hooks/useServerAPI";
 import { useWeb3Connect } from "../hooks/useWeb3Connect";
+import { useWeb3React } from "@web3-react/core";
 import { shortenAddress, addKeyField, fromWeiByDecimals } from "../utils";
 import { Row, Col, Card, Button, Tabs, Table, Drawer } from "antd";
 import { IERC20ABI } from "../config/ABI/IERC20";
 import { LiquidityPoolABI } from "../config/ABI/LiquidityPool";
 import numeral from "numeral";
 import Web3 from "web3";
-import BN from "bn.js";
+import { Contract } from "web3-eth-contract";
 
 interface ITokenCard {
   address: string;
@@ -18,17 +19,26 @@ interface ITokenCard {
   symbol: string;
   liquidity?: string;
   borrowed?: number;
-  balance?: BN;
+  balance?: string;
+}
+
+interface ITokenContract {
+  address: string;
+  decimals?: string;
+  instance: Contract;
 }
 
 const infuraUrl = `https://kovan.infura.io/v3/7aa91bdccc17426b9c2c4c9ca3f414d3`;
 const web3Infura = new Web3(new Web3.providers.HttpProvider(infuraUrl));
 
 const liquidityPoolAddress = "0x56042714e20E118C886e3Bf8B5d13f189F776162";
-let liquidityPoolInstance: any;
-const tokensIntances: any[] = [];
+let liquidityPoolInstance: Contract = new web3Infura.eth.Contract(
+  LiquidityPoolABI,
+  liquidityPoolAddress
+);
+let liquidityBalances: string[] = [];
+
 const tokensAddressesToIndexes = new Map();
-let balances: string[] = [];
 
 const tokensIcons: { [key: string]: string } = {
   USDC: "/images/usdc-icon.svg",
@@ -60,12 +70,18 @@ const topTableColumns = [
 ];
 
 export default function FlashLoans() {
+  const [tokensContracts, setTokensContracts] = useState(
+    new Map<string, ITokenContract>()
+  );
   const [tokensCards, setTokensCards] = useState<ITokenCard[]>();
+  const [tokensDepositCards, setTokensDepositCards] = useState<ITokenCard[]>();
   const [isDepositVisible, setIsDepositVisible] = useState<boolean>(false);
   const { data, isLoading } = useServerAPI();
+  const { active, account, library } = useWeb3React();
 
   useWeb3Connect();
 
+  // build initial cards and contracts
   useEffect(() => {
     if (!data || tokensCards) return;
 
@@ -74,53 +90,100 @@ export default function FlashLoans() {
     ).map((key: string) => ({ address: key, isLoading: true, symbol: "" }));
     setTokensCards(initialTokensCards);
 
-    liquidityPoolInstance = new web3Infura.eth.Contract(
-      LiquidityPoolABI,
-      liquidityPoolAddress
-    );
-
     (async () => {
       const tokensNumber = await liquidityPoolInstance.methods
         .N_TOKENS()
         .call();
 
+      const _tokensContracts = new Map<string, ITokenContract>();
+
       for (let i = 0; i < tokensNumber; i++) {
         const tokenAddress = await liquidityPoolInstance.methods
           .tokens(i)
           .call();
-        tokensIntances.push(
-          new web3Infura.eth.Contract(IERC20ABI, tokenAddress)
-        );
+        _tokensContracts.set(tokenAddress, {
+          instance: new web3Infura.eth.Contract(IERC20ABI, tokenAddress),
+          address: tokenAddress,
+        });
         tokensAddressesToIndexes.set(tokenAddress, i);
       }
-      balances = await liquidityPoolInstance.methods.balances().call();
+      liquidityBalances = await liquidityPoolInstance.methods.balances().call();
 
-      tokensIntances.forEach(async (tokenInst) => {
-        tokenInst._decimals = await tokenInst.methods.decimals().call();
+      _tokensContracts.forEach(async (tokenCntr) => {
+        tokenCntr.decimals = await tokenCntr.instance.methods.decimals().call();
 
         const liquidity = fromWeiByDecimals(
-          balances[tokensAddressesToIndexes.get(tokenInst._address)],
-          tokenInst._decimals
+          liquidityBalances[tokensAddressesToIndexes.get(tokenCntr.address)],
+          tokenCntr.decimals as string
         );
 
         const tokenCard: ITokenCard = {
-          address: tokenInst._address,
+          address: tokenCntr.address,
           isLoading: false,
-          name: await tokenInst.methods.name().call(),
-          symbol: await tokenInst.methods.symbol().call(),
+          name: await tokenCntr.instance.methods.name().call(),
+          symbol: await tokenCntr.instance.methods.symbol().call(),
           liquidity,
-          borrowed: data.total_borrowed[tokenInst._address],
+          borrowed: data.total_borrowed[tokenCntr.address],
         };
         tokenCard.img = tokensIcons[tokenCard.symbol];
-        setTokensCards((tkns = []) =>
+
+        setTokensCards((prevTkns = []) =>
           [
-            ...tkns.filter((tkn) => tkn.address !== tokenCard.address),
+            ...prevTkns.filter(
+              (prevTkn) => prevTkn.address !== tokenCard.address
+            ),
             tokenCard,
           ].reverse()
         );
       });
+
+      setTokensContracts(new Map([..._tokensContracts]));
     })();
   }, [data, tokensCards]);
+
+  //build deposit token cards when wallet connects and initial cards are ready
+  useEffect(() => {
+    if (!active || !tokensCards || tokensCards.some((tkn) => tkn.isLoading))
+      return;
+    (async () => {
+      const _tokensDepositCards: ITokenCard[] = await Promise.all(
+        tokensCards.map(async (tkn: ITokenCard) => {
+          const tknContract = tokensContracts.get(tkn.address);
+          const _balance = fromWeiByDecimals(
+            await tknContract?.instance.methods.balanceOf(account).call(),
+            tknContract?.decimals
+          );
+          return {
+            ...tkn,
+            balance: _balance,
+          };
+        })
+      );
+      setTokensDepositCards(_tokensDepositCards);
+      console.log("_tokensDepositCards -->", _tokensDepositCards);
+    })();
+  }, [active, tokensCards]);
+
+  // change infura http provider to wallet provider in tokens contracts when wallet connects
+  // and when token contracts are ready
+  useEffect(() => {
+    if (
+      !active ||
+      tokensContracts.size === 0 ||
+      [...tokensContracts.values()].some(
+        (tkn) => tkn.instance instanceof library.eth.Contract
+      )
+    )
+      return;
+    setTokensContracts(
+      new Map<string, ITokenContract>(
+        Array.from(tokensContracts, ([adr, tkn]) => [
+          adr,
+          { ...tkn, instance: new library.eth.Contract(IERC20ABI, adr) },
+        ])
+      )
+    );
+  }, [active, tokensContracts]);
 
   return (
     <AppLayout title="Flash Loans" isDataFetching={isLoading}>
@@ -155,6 +218,7 @@ export default function FlashLoans() {
                       size="large"
                       type="primary"
                       onClick={() => setIsDepositVisible(true)}
+                      disabled={!active}
                     >
                       Deposit
                     </Button>
