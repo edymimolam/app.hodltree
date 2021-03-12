@@ -109,7 +109,6 @@ export default function FlashLoans() {
     ITokenDepositCard[]
   >();
   const [isDepositVisible, setIsDepositVisible] = useState<boolean>(false);
-  const [depositInputValue, setDepositInputValue] = useState<string>();
   const { data, isLoading } = useServerAPI();
   const { active, account, library } = useWeb3React();
 
