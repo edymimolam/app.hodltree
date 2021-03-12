@@ -85,3 +85,9 @@ export const addKeyField = (
   data: { address: string; contribute: number }[]
 ): { address: string; contribute: number; key: number }[] =>
   data.map((v, i) => ({ ...v, key: i + 1 }));
+
+export function createEtherscanLink(adr: string): string {
+  return process.env.NEXT_PUBLIC_ENVIRONMENT === "DEV"
+    ? `https://kovan.etherscan.io/address/${adr}`
+    : `https://etherscan.io/address/${adr}`;
+}

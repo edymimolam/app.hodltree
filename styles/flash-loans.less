@@ -102,7 +102,13 @@
       width: @avatar-size-lg;
       height: @avatar-size-lg;
       margin-right: @margin-xs;
+      border-radius: 50%;
+      transition: filter @animation-duration-base @ease-base-in;
     }
+    &-icon:hover {
+      filter: opacity(70%);
+    }
+
     &__item {
       width: 33.33%;
       display: flex;

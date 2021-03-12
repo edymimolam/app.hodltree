@@ -3,7 +3,12 @@ import AppLayout from "../components/AppLayout";
 import { useServerAPI } from "../hooks/useServerAPI";
 import { useWeb3Connect } from "../hooks/useWeb3Connect";
 import { useWeb3React } from "@web3-react/core";
-import { shortenAddress, addKeyField, fromWeiByDecimals } from "../utils";
+import {
+  shortenAddress,
+  addKeyField,
+  fromWeiByDecimals,
+  createEtherscanLink,
+} from "../utils";
 import {
   Row,
   Col,
@@ -47,6 +52,8 @@ const web3Infura = new Web3(
 );
 
 const liquidityPoolAddress = "0x56042714e20E118C886e3Bf8B5d13f189F776162";
+
+console.log(createEtherscanLink(liquidityPoolAddress));
 let liquidityPoolInstance: Contract = new web3Infura.eth.Contract(
   LiquidityPoolABI,
   liquidityPoolAddress
@@ -310,7 +317,15 @@ export default function FlashLoans() {
                       >
                         <div className="fl-token">
                           <div className="fl-token__item fl-token-asset">
-                            <img className="fl-token-icon" src={tkn.img}></img>
+                            <a
+                              href={createEtherscanLink(tkn.address)}
+                              target="_blank"
+                            >
+                              <img
+                                className="fl-token-icon"
+                                src={tkn.img}
+                              ></img>
+                            </a>
                             <div className="flex-column-jsb">
                               <span className="fl-token-asset__symbol">
                                 {tkn.symbol}
