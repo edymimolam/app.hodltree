@@ -147,6 +147,7 @@
 }
 .fl-deposit {
   .fl-deposit-card {
+    margin-bottom: 70px;
     .ant-card-meta-title {
       font-size: @font-size-base;
     }
@@ -159,7 +160,28 @@
       border-bottom-left-radius: @border-radius-base;
       border-bottom-right-radius: @border-radius-base;
     }
+    li {
+      width: 100% !important;
+    }
+    li:nth-child(2) {
+      margin-top: 0;
+    }
     .fl-deposit-card__input {
+      width: 100%;
+    }
+    .fl-deposit-card-unlock {
+      display: flex;
+      flex-direction: column;
+      .fl-deposit-card-unlock__bottom-block {
+        margin-top: @margin-sm;
+        display: flex;
+        flex-direction: row;
+        button:first-child {
+          margin-right: @margin-sm;
+        }
+      }
+    }
+    .ant-btn {
       width: 100%;
     }
   }

@@ -21,6 +21,7 @@ import {
   Skeleton,
   InputNumber,
 } from "antd";
+import { CloseOutlined } from "@ant-design/icons";
 import { IERC20ABI } from "../config/ABI/IERC20";
 import { LiquidityPoolABI } from "../config/ABI/LiquidityPool";
 import numeral from "numeral";
@@ -33,9 +34,18 @@ interface ITokenCard {
   img?: string;
   name?: string;
   symbol: string;
+}
+
+interface ITokenContentCard extends ITokenCard {
   liquidity?: string;
   borrowed?: number;
+}
+
+interface ITokenDepositCard extends ITokenCard {
   balance?: string;
+  inputValue?: number;
+  isNeedToUnlock: boolean;
+  isShowUnlock: boolean;
 }
 
 interface ITokenContract {
@@ -53,7 +63,6 @@ const web3Infura = new Web3(
 
 const liquidityPoolAddress = "0x56042714e20E118C886e3Bf8B5d13f189F776162";
 
-console.log(createEtherscanLink(liquidityPoolAddress));
 let liquidityPoolInstance: Contract = new web3Infura.eth.Contract(
   LiquidityPoolABI,
   liquidityPoolAddress
@@ -95,9 +104,12 @@ export default function FlashLoans() {
   const [tokensContracts, setTokensContracts] = useState(
     new Map<string, ITokenContract>()
   );
-  const [tokensCards, setTokensCards] = useState<ITokenCard[]>();
-  const [tokensDepositCards, setTokensDepositCards] = useState<ITokenCard[]>();
+  const [tokensCards, setTokensCards] = useState<ITokenContentCard[]>();
+  const [tokensDepositCards, setTokensDepositCards] = useState<
+    ITokenDepositCard[]
+  >();
   const [isDepositVisible, setIsDepositVisible] = useState<boolean>(false);
+  const [depositInputValue, setDepositInputValue] = useState<string>();
   const { data, isLoading } = useServerAPI();
   const { active, account, library } = useWeb3React();
 
@@ -111,7 +123,13 @@ export default function FlashLoans() {
       data.total_borrowed
     ).map((key: string) => ({ address: key, isLoading: true, symbol: "" }));
     setTokensCards(initialTokensCards);
-    setTokensDepositCards(initialTokensCards);
+    setTokensDepositCards(
+      initialTokensCards.map((tkn) => ({
+        ...tkn,
+        isNeedToUnlock: false,
+        isShowUnlock: false,
+      }))
+    );
 
     (async () => {
       const tokensNumber = await liquidityPoolInstance.methods
@@ -140,7 +158,7 @@ export default function FlashLoans() {
           tokenCntr.decimals as string
         );
 
-        const tokenCard: ITokenCard = {
+        const tokenCard: ITokenContentCard = {
           address: tokenCntr.address,
           isLoading: false,
           name: await tokenCntr.instance.methods.name().call(),
@@ -169,8 +187,8 @@ export default function FlashLoans() {
     if (!active || !tokensCards || tokensCards.some((tkn) => tkn.isLoading))
       return;
     (async () => {
-      const _tokensDepositCards: ITokenCard[] = await Promise.all(
-        tokensCards.map(async (tkn: ITokenCard) => {
+      const _tokensDepositCards: ITokenDepositCard[] = await Promise.all(
+        tokensCards.map(async (tkn) => {
           const tknContract = tokensContracts.get(tkn.address);
           const _balance = fromWeiByDecimals(
             await tknContract?.instance.methods.balanceOf(account).call(),
@@ -179,11 +197,12 @@ export default function FlashLoans() {
           return {
             ...tkn,
             balance: _balance,
+            isNeedToUnlock: false,
+            isShowUnlock: false,
           };
         })
       );
       setTokensDepositCards(_tokensDepositCards);
-      console.log("_tokensDepositCards -->", _tokensDepositCards);
     })();
   }, [active, tokensCards]);
 
@@ -208,6 +227,92 @@ export default function FlashLoans() {
     );
   }, [active, tokensContracts]);
 
+  const onNeedToUnlock = (adr: string): void =>
+    setTokensDepositCards((prev) =>
+      prev?.map((tkn) =>
+        tkn.address === adr
+          ? { ...tkn, isNeedToUnlock: true, isShowUnlock: false }
+          : tkn
+      )
+    );
+
+  const onShowUnlock = (adr: string): void =>
+    setTokensDepositCards((prev) =>
+      prev?.map((tkn) =>
+        tkn.address === adr
+          ? { ...tkn, isNeedToUnlock: false, isShowUnlock: true }
+          : tkn
+      )
+    );
+
+  const onCloseUnlock = (adr: string): void =>
+    setTokensDepositCards((prev) =>
+      prev?.map((tkn) =>
+        tkn.address === adr
+          ? { ...tkn, isNeedToUnlock: false, isShowUnlock: false }
+          : tkn
+      )
+    );
+
+  const onDepositInput = (value: number, adr: string): void =>
+    setTokensDepositCards((prev) =>
+      prev?.map((tkn) =>
+        tkn.address === adr ? { ...tkn, inputValue: value } : tkn
+      )
+    );
+
+  type depositCardButtonsProps = {
+    isShowUnlock: boolean;
+    isNeedToUnlock: boolean;
+    address: string;
+    inputValue?: number;
+    tokenSymbol?: string;
+  };
+  const DepositCardButtons = ({
+    isShowUnlock,
+    isNeedToUnlock,
+    address,
+    tokenSymbol,
+    inputValue,
+  }: depositCardButtonsProps): JSX.Element[] => {
+    const Input = (
+      <InputNumber
+        className="fl-deposit-card__input"
+        size={"large"}
+        onChange={(value) => {
+          onDepositInput(value as number, address);
+          onNeedToUnlock(address);
+        }}
+        value={inputValue}
+      />
+    );
+    const ButtonToUnlock = (
+      <Button onClick={() => onShowUnlock(address)} size="large">
+        Unlock token
+      </Button>
+    );
+    const UnlockBlock = (
+      <div className="fl-deposit-card__input fl-deposit-card-unlock">
+        <div>
+          <Button size="large">
+            Unlock {inputValue} {tokenSymbol}
+          </Button>
+        </div>
+        <div className="fl-deposit-card-unlock__bottom-block">
+          <Button size="large">Unlock infinite</Button>
+          <Button
+            size="large"
+            onClick={() => onCloseUnlock(address)}
+            icon={<CloseOutlined />}
+          ></Button>
+        </div>
+      </div>
+    );
+    if (isShowUnlock) return [UnlockBlock];
+    if (isNeedToUnlock) return [Input, ButtonToUnlock];
+    return [Input];
+  };
+
   const DepositDrawer = () => (
     <Drawer
       visible={isDepositVisible}
@@ -216,18 +321,22 @@ export default function FlashLoans() {
       className="fl-drawer fl-deposit"
       onClose={() => setIsDepositVisible(false)}
     >
-      <Row gutter={[16, 32]} justify="start">
+      <Row gutter={[16, 16]} justify="start">
         {tokensDepositCards?.map((tkn) => (
           <Col key={`deposit${tkn.address}`} xs={24} md={12} lg={8}>
             <Skeleton loading={tkn.isLoading} active avatar>
               <Card
                 className="fl-deposit-card"
-                actions={[
-                  <InputNumber
-                    className="fl-deposit-card__input"
-                    size={"large"}
-                  />,
-                ]}
+                style={{
+                  marginBottom: tkn.isNeedToUnlock || tkn.isShowUnlock ? 0 : 52,
+                }}
+                actions={DepositCardButtons({
+                  isShowUnlock: tkn.isShowUnlock,
+                  isNeedToUnlock: tkn.isNeedToUnlock,
+                  address: tkn.address,
+                  inputValue: tkn.inputValue,
+                  tokenSymbol: tkn.symbol,
+                })}
               >
                 <Card.Meta
                   avatar={<Avatar size="large" src={tkn.img} />}
