@@ -200,6 +200,50 @@ export default function FlashLoans() {
     );
   }, [active, tokensContracts]);
 
+  const DepositDrawer = () => (
+    <Drawer
+      visible={isDepositVisible}
+      width={"80%"}
+      title="Title"
+      className="fl-drawer fl-deposit"
+      onClose={() => setIsDepositVisible(false)}
+    >
+      <Row gutter={[16, 32]} justify="start">
+        {tokensDepositCards?.map((tkn) => (
+          <Col key={`deposit${tkn.address}`} xs={24} md={12} lg={8}>
+            <Skeleton loading={tkn.isLoading} active avatar>
+              <Card
+                className="fl-deposit-card"
+                actions={[
+                  <InputNumber
+                    className="fl-deposit-card__input"
+                    size={"large"}
+                  />,
+                ]}
+              >
+                <Card.Meta
+                  avatar={<Avatar size="large" src={tkn.img} />}
+                  title={tkn.name}
+                  description={
+                    <span>
+                      {tkn.balance}{" "}
+                      <a
+                        className="fl-deposit-card__max"
+                        onClick={() => console.log("grr")}
+                      >
+                        Max
+                      </a>
+                    </span>
+                  }
+                />
+              </Card>
+            </Skeleton>
+          </Col>
+        ))}
+      </Row>
+    </Drawer>
+  );
+
   return (
     <AppLayout title="Flash Loans" isDataFetching={isLoading}>
       {data && (
@@ -310,47 +354,7 @@ export default function FlashLoans() {
               </Tabs>
             </Col>
           </Row>
-          <Drawer
-            visible={isDepositVisible}
-            width={"80%"}
-            title="Title"
-            className="fl-drawer fl-deposit"
-            onClose={() => setIsDepositVisible(false)}
-          >
-            <Row gutter={[16, 32]} justify="start">
-              {tokensDepositCards?.map((tkn) => (
-                <Col key={`deposit${tkn.address}`} xs={24} md={12} lg={8}>
-                  <Skeleton loading={tkn.isLoading} active avatar>
-                    <Card
-                      className="fl-deposit-card"
-                      actions={[
-                        <InputNumber
-                          className="fl-deposit-card__input"
-                          size={"large"}
-                        />,
-                      ]}
-                    >
-                      <Card.Meta
-                        avatar={<Avatar size="large" src={tkn.img} />}
-                        title={tkn.name}
-                        description={
-                          <span>
-                            {tkn.balance}{" "}
-                            <a
-                              className="fl-deposit-card__max"
-                              onClick={() => console.log("grr")}
-                            >
-                              Max
-                            </a>
-                          </span>
-                        }
-                      />
-                    </Card>
-                  </Skeleton>
-                </Col>
-              ))}
-            </Row>
-          </Drawer>
+          {DepositDrawer()}
         </>
       )}
     </AppLayout>
