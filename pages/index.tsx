@@ -39,8 +39,9 @@ interface ITokenContract {
   instance: Contract;
 }
 
-const infuraEndpoint =
-  "wss://kovan.infura.io/ws/v3/6573e783501746d2a6f9edd5721d1876";
+const networkName =
+  process.env.NEXT_PUBLIC_ENVIRONMENT === "DEV" ? "kovan" : "mainnet";
+const infuraEndpoint = `wss://${networkName}.infura.io/ws/v3/6573e783501746d2a6f9edd5721d1876`;
 const web3Infura = new Web3(
   new Web3.providers.WebsocketProvider(infuraEndpoint)
 );
