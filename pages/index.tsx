@@ -342,15 +342,15 @@ export default function FlashLoans() {
                   avatar={<Avatar size="large" src={tkn.img} />}
                   title={tkn.name}
                   description={
-                    <span>
-                      {tkn.balance}{" "}
+                    <div className="fl-deposit-card__balance">
+                      <span>{tkn.balance} </span>
                       <a
                         className="fl-deposit-card__max"
                         onClick={() => console.log("grr")}
                       >
                         Max
                       </a>
-                    </span>
+                    </div>
                   }
                 />
               </Card>

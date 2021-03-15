@@ -149,12 +149,27 @@
 .fl-deposit {
   .fl-deposit-card {
     margin-bottom: 70px;
+    .ant-card-meta-detail {
+      overflow: visible;
+    }
     .ant-card-meta-title {
       font-size: @font-size-base;
     }
-    .fl-deposit-card__max {
-      margin-left: @margin-xs;
-      font-size: @font-size-sm;
+    .fl-deposit-card__balance {
+      position: relative;
+      margin-top: 23px;
+      padding-left: 76px;
+      &::before {
+        position: absolute;
+        left: -1px;
+        bottom: 4px;
+        content: "Wallet Balance: ";
+        font-size: @font-size-xs;
+      }
+      .fl-deposit-card__max {
+        margin-left: @margin-xs;
+        font-size: @font-size-sm;
+      }
     }
     .ant-card-actions {
       padding: 0 @padding-md;
