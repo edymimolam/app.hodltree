@@ -300,6 +300,7 @@ export default function FlashLoans() {
         <div className="fl-deposit-card-unlock__bottom-block">
           <Button size="large">Unlock infinite</Button>
           <Button
+            className="fl-deposit-card-unlock__close"
             size="large"
             onClick={() => onCloseUnlock(address)}
             icon={<CloseOutlined />}
