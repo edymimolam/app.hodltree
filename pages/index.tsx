@@ -7,6 +7,7 @@ import {
   shortenAddress,
   addKeyField,
   fromWeiByDecimals,
+  toWeiByDecimals,
   createEtherscanLink,
 } from "../utils";
 import {
@@ -44,7 +45,7 @@ interface ITokenContentCard extends ITokenCard {
 
 interface ITokenDepositCard extends ITokenCard {
   balance?: string;
-  inputValue?: number;
+  inputValue?: string;
   isNeedToUnlock: boolean;
   isShowUnlock: boolean;
 }
@@ -292,18 +293,28 @@ export default function FlashLoans() {
       )
     );
 
-  const onDepositInput = (value: number, adr: string): void =>
+  const onDepositInput = (value: string, adr: string): void => {
     setTokensDepositCards((prev) =>
       prev?.map((tkn) =>
         tkn.address === adr ? { ...tkn, inputValue: value } : tkn
       )
     );
+    if (!value) {
+      onCloseUnlock(adr);
+      return;
+    }
+    const token = tokensContracts.get(adr);
+    const allowance = token?.myAllowanceToLp;
+    const inputValueWei = toWeiByDecimals(new BN(value), token?.decimals);
+    if (inputValueWei.gt(allowance as BN)) onNeedToUnlock(adr);
+    if (inputValueWei.lte(allowance as BN)) onCloseUnlock(adr);
+  };
 
   type depositCardButtonsProps = {
     isShowUnlock: boolean;
     isNeedToUnlock: boolean;
     address: string;
-    inputValue?: number;
+    inputValue?: string;
     tokenSymbol?: string;
   };
   const DepositCardButtons = ({
@@ -317,9 +328,9 @@ export default function FlashLoans() {
       <InputNumber
         className="fl-deposit-card__input"
         size={"large"}
+        stringMode
         onChange={(value) => {
-          onDepositInput(value as number, address);
-          onNeedToUnlock(address);
+          onDepositInput(value, address);
         }}
         value={inputValue}
       />
