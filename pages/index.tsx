@@ -53,9 +53,9 @@ interface ITokenContract {
   address: string;
   instance: Contract;
   decimals?: string;
-  liquidity?: BN;
-  balance?: BN;
-  allowance?: BN;
+  lpBalance?: BN;
+  myBalance?: BN;
+  myAllowanceToLp?: BN;
 }
 
 const networkName =
@@ -108,7 +108,10 @@ export default function FlashLoans() {
   const [tokensContracts, setTokensContracts] = useState(
     new Map<string, ITokenContract>()
   );
-  const [areTokenContractsReady, setAreTokenContractsReady] = useState(false);
+  const [
+    areInitialTokenContractsReady,
+    setAreInitialTokenContractsReady,
+  ] = useState(false);
   const [tokensCards, setTokensCards] = useState<ITokenContentCard[]>();
   const [tokensDepositCards, setTokensDepositCards] = useState<
     ITokenDepositCard[]
@@ -158,7 +161,7 @@ export default function FlashLoans() {
           const _token: ITokenContract = {
             instance: new web3Infura.eth.Contract(IERC20ABI, adr),
             address: adr,
-            liquidity: new BN(liquidity),
+            lpBalance: new BN(liquidity),
           };
           _token.decimals = await _token.instance.methods.decimals().call();
           _tokensContracts.set(adr, _token);
@@ -184,7 +187,7 @@ export default function FlashLoans() {
       );
 
       setTokensContracts(new Map([..._tokensContracts]));
-      setAreTokenContractsReady(true);
+      setAreInitialTokenContractsReady(true);
     })();
   }, [data, tokensCards]);
 
@@ -194,7 +197,7 @@ export default function FlashLoans() {
       !active ||
       !tokensCards ||
       tokensCards.some((tkn) => tkn.isLoading) ||
-      !areTokenContractsReady
+      !areInitialTokenContractsReady
     )
       return;
     (async () => {
@@ -215,14 +218,14 @@ export default function FlashLoans() {
       );
       setTokensDepositCards(_tokensDepositCards);
     })();
-  }, [active, tokensCards, areTokenContractsReady]);
+  }, [active, tokensCards, areInitialTokenContractsReady]);
 
   // change infura wss provider to wallet provider in tokens contracts when wallet connects
   // and when token contracts are ready
   useEffect(() => {
     if (
       !active ||
-      !areTokenContractsReady ||
+      !areInitialTokenContractsReady ||
       [...tokensContracts.values()].some(
         (tkn) => tkn.instance instanceof library.eth.Contract
       )
@@ -236,12 +239,31 @@ export default function FlashLoans() {
         ])
       )
     );
-  }, [active, tokensContracts, areTokenContractsReady]);
+  }, [active, tokensContracts, areInitialTokenContractsReady]);
 
   // add user's info to contracts when wallet is connected and when token contracts are ready
   useEffect(() => {
-    if (!active || !areTokenContractsReady) return;
-  }, [active, areTokenContractsReady]);
+    if (!active || !areInitialTokenContractsReady) return;
+    (async () => {
+      const _tokenContracts = new Map<string, ITokenContract>();
+      await Promise.all(
+        [...tokensContracts].map(async ([adr, tkn]) => {
+          _tokenContracts.set(adr, {
+            ...tkn,
+            myBalance: new BN(
+              await tkn.instance.methods.balanceOf(account).call()
+            ),
+            myAllowanceToLp: new BN(
+              await tkn.instance.methods
+                .allowance(account, liquidityPoolAddress)
+                .call()
+            ),
+          });
+        })
+      );
+      setTokensContracts(_tokenContracts);
+    })();
+  }, [active, areInitialTokenContractsReady]);
 
   const onNeedToUnlock = (adr: string): void =>
     setTokensDepositCards((prev) =>
