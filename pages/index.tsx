@@ -21,8 +21,14 @@ import {
   Avatar,
   Skeleton,
   InputNumber,
+  Steps,
 } from "antd";
-import { CloseOutlined } from "@ant-design/icons";
+import {
+  CloseOutlined,
+  LoadingOutlined,
+  SmileOutlined,
+  HomeOutlined,
+} from "@ant-design/icons";
 import { IERC20ABI } from "../config/ABI/IERC20";
 import { LiquidityPoolABI } from "../config/ABI/LiquidityPool";
 import numeral from "numeral";
@@ -48,6 +54,9 @@ interface ITokenDepositCard extends ITokenCard {
   inputValue?: string;
   isNeedToUnlock: boolean;
   isShowUnlock: boolean;
+  isShowSteps: boolean;
+  txProgress: number;
+  txError?: string;
 }
 
 interface ITokenContract {
@@ -136,6 +145,8 @@ export default function FlashLoans() {
         ...tkn,
         isNeedToUnlock: false,
         isShowUnlock: false,
+        isShowSteps: false,
+        txProgress: 0,
       }))
     );
 
@@ -214,6 +225,8 @@ export default function FlashLoans() {
             balance: _balance,
             isNeedToUnlock: false,
             isShowUnlock: false,
+            isShowSteps: false,
+            txProgress: 0,
           };
         })
       );
@@ -338,20 +351,25 @@ export default function FlashLoans() {
     if (inputValueWei.lte(allowance as BN)) onCloseUnlock(adr);
   };
 
-  type depositCardButtonsProps = {
-    isShowUnlock: boolean;
-    isNeedToUnlock: boolean;
+  type DepositCardActionsProps = {
     address: string;
     inputValue?: string;
     tokenSymbol?: string;
+    isShowUnlock: boolean;
+    isNeedToUnlock: boolean;
+    isShowSteps: boolean;
+    txProgress: number;
+    txError?: string;
   };
-  const DepositCardButtons = ({
+  const DepositCardActions = ({
     isShowUnlock,
     isNeedToUnlock,
     address,
     tokenSymbol,
     inputValue,
-  }: depositCardButtonsProps): JSX.Element[] => {
+    isShowSteps,
+    txProgress,
+  }: DepositCardActionsProps): JSX.Element[] => {
     const Input = (
       <InputNumber
         className="fl-deposit-card__input"
@@ -386,8 +404,22 @@ export default function FlashLoans() {
         </div>
       </div>
     );
+    const TxSteps = (
+      <Steps
+        size="small"
+        current={txProgress}
+        progressDot
+        labelPlacement="vertical"
+      >
+        <Steps.Step title="started" />
+        <Steps.Step title="waiting" />
+        <Steps.Step title="done" />
+      </Steps>
+    );
+
     if (isShowUnlock) return [UnlockBlock];
     if (isNeedToUnlock) return [Input, ButtonToUnlock];
+    if (isShowSteps) return [TxSteps];
     return [Input];
   };
 
@@ -408,12 +440,15 @@ export default function FlashLoans() {
                 style={{
                   marginBottom: tkn.isNeedToUnlock || tkn.isShowUnlock ? 0 : 52,
                 }}
-                actions={DepositCardButtons({
+                actions={DepositCardActions({
                   isShowUnlock: tkn.isShowUnlock,
                   isNeedToUnlock: tkn.isNeedToUnlock,
                   address: tkn.address,
                   inputValue: tkn.inputValue,
                   tokenSymbol: tkn.symbol,
+                  isShowSteps: tkn.isShowSteps,
+                  txProgress: tkn.txProgress,
+                  txError: tkn.txError,
                 })}
               >
                 <Card.Meta

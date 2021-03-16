@@ -148,7 +148,8 @@
 }
 .fl-deposit {
   .fl-deposit-card {
-    margin-bottom: 70px;
+    margin: 0 auto 70px;
+    max-width: @deposit-card-width;
     .ant-card-meta-detail {
       overflow: visible;
     }
@@ -175,33 +176,60 @@
       padding: 0 @padding-md;
       border-bottom-left-radius: @border-radius-base;
       border-bottom-right-radius: @border-radius-base;
-    }
-    li {
-      width: 100% !important;
-    }
-    li:nth-child(2) {
-      margin-top: 0;
-    }
-    .fl-deposit-card__input {
-      width: 100%;
-    }
-    .fl-deposit-card-unlock {
-      display: flex;
-      flex-direction: column;
-      .fl-deposit-card-unlock__bottom-block {
-        margin-top: @margin-sm;
+      li {
+        width: 100% !important;
+      }
+      li:nth-child(2) {
+        margin-top: 0;
+      }
+      .ant-btn {
+        width: 100%;
+      }
+      .fl-deposit-card__input {
+        width: 100%;
+      }
+      .fl-deposit-card-unlock {
         display: flex;
-        flex-direction: row;
-        button:first-child {
-          margin-right: @margin-sm;
-        }
-        .fl-deposit-card-unlock__close {
-          width: 55px;
+        flex-direction: column;
+        .fl-deposit-card-unlock__bottom-block {
+          margin-top: @margin-sm;
+          display: flex;
+          flex-direction: row;
+          button:first-child {
+            margin-right: @margin-sm;
+          }
+          .fl-deposit-card-unlock__close {
+            width: 55px;
+          }
         }
       }
-    }
-    .ant-btn {
-      width: 100%;
+      .ant-steps {
+        padding: 6px 0 2px;
+        .ant-steps-item-container {
+          .ant-steps-item-tail {
+            margin-left: 40px;
+          }
+          .ant-steps-item-icon {
+            margin-left: 37px;
+          }
+          .ant-steps-item-content {
+            width: 88.6px;
+          }
+          .ant-steps-item-title {
+            line-height: @font-size-base;
+          }
+        }
+        .ant-steps-item-active {
+          .ant-steps-item-content {
+            margin-top: 6px;
+          }
+        }
+        .ant-steps-item:last-child {
+          .ant-steps-item-icon {
+            color: @success-color;
+          }
+        }
+      }
     }
   }
 }
