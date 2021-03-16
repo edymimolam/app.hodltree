@@ -240,6 +240,10 @@ export default function FlashLoans() {
         ])
       )
     );
+    liquidityPoolInstance = new library.eth.Contract(
+      LiquidityPoolABI,
+      liquidityPoolAddress
+    );
   }, [active, tokensContracts, areInitialTokenContractsReady]);
 
   // add user's info to contracts when wallet is connected and when token contracts are ready
