@@ -23,12 +23,7 @@ import {
   InputNumber,
   Steps,
 } from "antd";
-import {
-  CloseOutlined,
-  LoadingOutlined,
-  SmileOutlined,
-  HomeOutlined,
-} from "@ant-design/icons";
+import { CloseOutlined } from "@ant-design/icons";
 import { IERC20ABI } from "../config/ABI/IERC20";
 import { LiquidityPoolABI } from "../config/ABI/LiquidityPool";
 import numeral from "numeral";
@@ -284,19 +279,38 @@ export default function FlashLoans() {
   }, [active, areInitialTokenContractsReady]);
 
   const onUnlock = async (adr: string, value: string = ""): Promise<void> => {
+    setTokensDepositCards((prev) =>
+      prev?.map((tkn) =>
+        tkn.address === adr ? { ...tkn, isShowSteps: true, txProgress: 0 } : tkn
+      )
+    );
+
     const token = tokensContracts.get(adr);
     const inputValueWei = toWeiByDecimals(new BN(value), token?.decimals);
 
     const gasForApprove = await token?.instance.methods
       .approve(liquidityPoolAddress, inputValueWei)
       .estimateGas({ from: account });
+
     const tx = await token?.instance.methods
       .approve(liquidityPoolAddress, inputValueWei)
-      .send({ from: account, gas: gasForApprove });
+      .send({ from: account, gas: gasForApprove })
+      .on("transactionHash", () =>
+        setTokensDepositCards((prev) =>
+          prev?.map((tkn) =>
+            tkn.address === adr ? { ...tkn, txProgress: 1 } : tkn
+          )
+        )
+      );
 
     const newAllowance = await token?.instance.methods
       .allowance(account, liquidityPoolAddress)
       .call();
+    setTokensDepositCards((prev) =>
+      prev?.map((tkn) =>
+        tkn.address === adr ? { ...tkn, txProgress: 2 } : tkn
+      )
+    );
     setTokensContracts(
       new Map(
         Array.from(tokensContracts, ([adr, tkn]) => [
@@ -304,6 +318,23 @@ export default function FlashLoans() {
           { ...tkn, myAllowanceToLp: new BN(newAllowance) },
         ])
       )
+    );
+    setTimeout(
+      () =>
+        setTokensDepositCards((prev) =>
+          prev?.map((tkn) =>
+            tkn.address === adr
+              ? {
+                  ...tkn,
+                  isShowSteps: false,
+                  txProgress: 0,
+                  isNeedToUnlock: false,
+                  isShowUnlock: false,
+                }
+              : tkn
+          )
+        ),
+      3000
     );
   };
 
@@ -417,9 +448,9 @@ export default function FlashLoans() {
       </Steps>
     );
 
+    if (isShowSteps) return [TxSteps];
     if (isShowUnlock) return [UnlockBlock];
     if (isNeedToUnlock) return [Input, ButtonToUnlock];
-    if (isShowSteps) return [TxSteps];
     return [Input];
   };
 
