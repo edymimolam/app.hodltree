@@ -26,6 +26,7 @@ import { IERC20ABI } from "../config/ABI/IERC20";
 import { LiquidityPoolABI } from "../config/ABI/LiquidityPool";
 import numeral from "numeral";
 import Web3 from "web3";
+import BN from "bn.js";
 import { Contract } from "web3-eth-contract";
 
 interface ITokenCard {
@@ -50,8 +51,11 @@ interface ITokenDepositCard extends ITokenCard {
 
 interface ITokenContract {
   address: string;
-  decimals?: string;
   instance: Contract;
+  decimals?: string;
+  liquidity?: BN;
+  balance?: BN;
+  allowance?: BN;
 }
 
 const networkName =
@@ -69,7 +73,7 @@ let liquidityPoolInstance: Contract = new web3Infura.eth.Contract(
 );
 let liquidityBalances: string[] = [];
 
-const tokensAddressesToIndexes = new Map();
+const tokensAddressesToIndexes = new Map<string, number>();
 
 const tokensIcons: { [key: string]: string } = {
   USDC: "/images/usdc-icon.svg",
@@ -104,6 +108,7 @@ export default function FlashLoans() {
   const [tokensContracts, setTokensContracts] = useState(
     new Map<string, ITokenContract>()
   );
+  const [areTokenContractsReady, setAreTokenContractsReady] = useState(false);
   const [tokensCards, setTokensCards] = useState<ITokenContentCard[]>();
   const [tokensDepositCards, setTokensDepositCards] = useState<
     ITokenDepositCard[]
@@ -141,49 +146,56 @@ export default function FlashLoans() {
         const tokenAddress = await liquidityPoolInstance.methods
           .tokens(i)
           .call();
-        _tokensContracts.set(tokenAddress, {
-          instance: new web3Infura.eth.Contract(IERC20ABI, tokenAddress),
-          address: tokenAddress,
-        });
         tokensAddressesToIndexes.set(tokenAddress, i);
       }
       liquidityBalances = await liquidityPoolInstance.methods.balances().call();
 
-      _tokensContracts.forEach(async (tokenCntr) => {
-        tokenCntr.decimals = await tokenCntr.instance.methods.decimals().call();
+      await Promise.all(
+        [...tokensAddressesToIndexes].map(async ([adr]) => {
+          const liquidity =
+            liquidityBalances[tokensAddressesToIndexes.get(adr) as number];
 
-        const liquidity = fromWeiByDecimals(
-          liquidityBalances[tokensAddressesToIndexes.get(tokenCntr.address)],
-          tokenCntr.decimals as string
-        );
+          const _token: ITokenContract = {
+            instance: new web3Infura.eth.Contract(IERC20ABI, adr),
+            address: adr,
+            liquidity: new BN(liquidity),
+          };
+          _token.decimals = await _token.instance.methods.decimals().call();
+          _tokensContracts.set(adr, _token);
 
-        const tokenCard: ITokenContentCard = {
-          address: tokenCntr.address,
-          isLoading: false,
-          name: await tokenCntr.instance.methods.name().call(),
-          symbol: await tokenCntr.instance.methods.symbol().call(),
-          liquidity,
-          borrowed: data.total_borrowed[tokenCntr.address],
-        };
-        tokenCard.img = tokensIcons[tokenCard.symbol];
-
-        setTokensCards((prevTkns = []) =>
-          [
-            ...prevTkns.filter(
-              (prevTkn) => prevTkn.address !== tokenCard.address
-            ),
-            tokenCard,
-          ].reverse()
-        );
-      });
+          const tokenCard: ITokenContentCard = {
+            address: adr,
+            isLoading: false,
+            name: await _token.instance.methods.name().call(),
+            symbol: await _token.instance.methods.symbol().call(),
+            liquidity: fromWeiByDecimals(liquidity, _token.decimals as string),
+            borrowed: data.total_borrowed[adr],
+          };
+          tokenCard.img = tokensIcons[tokenCard.symbol];
+          setTokensCards((prevTkns = []) =>
+            [
+              ...prevTkns.filter(
+                (prevTkn) => prevTkn.address !== tokenCard.address
+              ),
+              tokenCard,
+            ].reverse()
+          );
+        })
+      );
 
       setTokensContracts(new Map([..._tokensContracts]));
+      setAreTokenContractsReady(true);
     })();
   }, [data, tokensCards]);
 
   //build deposit token cards when wallet connects and initial cards are ready
   useEffect(() => {
-    if (!active || !tokensCards || tokensCards.some((tkn) => tkn.isLoading))
+    if (
+      !active ||
+      !tokensCards ||
+      tokensCards.some((tkn) => tkn.isLoading) ||
+      !areTokenContractsReady
+    )
       return;
     (async () => {
       const _tokensDepositCards: ITokenDepositCard[] = await Promise.all(
@@ -203,14 +215,14 @@ export default function FlashLoans() {
       );
       setTokensDepositCards(_tokensDepositCards);
     })();
-  }, [active, tokensCards]);
+  }, [active, tokensCards, areTokenContractsReady]);
 
   // change infura wss provider to wallet provider in tokens contracts when wallet connects
   // and when token contracts are ready
   useEffect(() => {
     if (
       !active ||
-      tokensContracts.size === 0 ||
+      !areTokenContractsReady ||
       [...tokensContracts.values()].some(
         (tkn) => tkn.instance instanceof library.eth.Contract
       )
@@ -224,7 +236,12 @@ export default function FlashLoans() {
         ])
       )
     );
-  }, [active, tokensContracts]);
+  }, [active, tokensContracts, areTokenContractsReady]);
+
+  // add user's info to contracts when wallet is connected and when token contracts are ready
+  useEffect(() => {
+    if (!active || !areTokenContractsReady) return;
+  }, [active, areTokenContractsReady]);
 
   const onNeedToUnlock = (adr: string): void =>
     setTokensDepositCards((prev) =>
