@@ -1,6 +1,6 @@
 import BN from "bn.js";
 import web3 from "web3";
-const { fromWei } = web3.utils;
+const { fromWei, toWei } = web3.utils;
 
 export function log(...params: any) {
   if (process.env.NODE_ENV !== "production") {
@@ -79,6 +79,18 @@ export function fromWeiByDecimals(
 ): string {
   const output = fromWei(num, getUnitByDecimal(decimals));
   return +decimals === 2 ? `${+output * 10}` : output;
+}
+
+export function toWeiByDecimals(num: BN, decimals: string | undefined): BN;
+export function toWeiByDecimals(
+  num: string,
+  decimals: string | undefined
+): string;
+export function toWeiByDecimals(num: any, decimals: any = "18"): any {
+  const output: string | BN = toWei(num, getUnitByDecimal(decimals));
+  if ((num as BN) instanceof BN)
+    return +decimals === 2 ? output.divn(10) : output;
+  return +decimals === 2 ? `${+output / 10}` : output;
 }
 
 export const addKeyField = (
