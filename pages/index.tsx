@@ -270,6 +270,30 @@ export default function FlashLoans() {
     })();
   }, [active, areInitialTokenContractsReady]);
 
+  const onUnlock = async (adr: string, value: string = ""): Promise<void> => {
+    const token = tokensContracts.get(adr);
+    const inputValueWei = toWeiByDecimals(new BN(value), token?.decimals);
+
+    const gasForApprove = await token?.instance.methods
+      .approve(liquidityPoolAddress, inputValueWei)
+      .estimateGas({ from: account });
+    const tx = await token?.instance.methods
+      .approve(liquidityPoolAddress, inputValueWei)
+      .send({ from: account, gas: gasForApprove });
+
+    const newAllowance = await token?.instance.methods
+      .allowance(account, liquidityPoolAddress)
+      .call();
+    setTokensContracts(
+      new Map(
+        Array.from(tokensContracts, ([adr, tkn]) => [
+          adr,
+          { ...tkn, myAllowanceToLp: new BN(newAllowance) },
+        ])
+      )
+    );
+  };
+
   const onNeedToUnlock = (adr: string): void =>
     setTokensDepositCards((prev) =>
       prev?.map((tkn) =>
@@ -347,7 +371,7 @@ export default function FlashLoans() {
     const UnlockBlock = (
       <div className="fl-deposit-card__input fl-deposit-card-unlock">
         <div>
-          <Button size="large">
+          <Button size="large" onClick={() => onUnlock(address, inputValue)}>
             Unlock {inputValue} {tokenSymbol}
           </Button>
         </div>
